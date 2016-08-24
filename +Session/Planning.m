@@ -5,7 +5,7 @@ function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
 if nargout < 1
     
     DataStruct.Environement = 'MRI';
-    
+    DataStruct.OperationMode = 'Acquistion';
     
 end
 
@@ -14,10 +14,56 @@ switch DataStruct.Environement
     case 'Training'
         Paradigme = {};
     case 'MRI'
-        Paradigme = {};
+        
+        NbOfTrials = 30;
+        
+        Paradigme = {
+            %  Go        NoGo    NbOfTrials
+            'neutral' 'negative' NbOfTrials
+            'neutral' 'positive' NbOfTrials
+            'circle'  'cross'    NbOfTrials
+            'cross'   'circle'   NbOfTrials
+            'neutral' []         NbOfTrials
+            
+            };
+        
 end
 
+switch DataStruct.OperationMode
+    
+    case 'Acquisition'
+        Speed = 1;
+        
+    case 'FastDebug'
+        Speed = 10;
+        Paradigme(:,3) = cellfun(@(x) {round(x/Speed)},Paradigme(:,3));
+        NbOfTrials = round(NbOfTrials/Speed); %#ok<*NASGU>
+        
+    case 'RealisticDebug'
+        Speed = 1;
+        
+end
+
+
+%% Instructions
+
+%           Go      NoGo         Instructions
+Instruction.neutral.negative = {''};
+Instruction.neutral.positive = {''};
+Instruction.neutral.null     = {''};
+Instruction.circle .cross    = {''};
+Instruction.cross  .circle   = {''};
+
+
 %% Timings
+
+Timing.Stimulus      = 0.300; % s
+Timing.WhiteScreen_1 = 0.250; % s
+Timing.Cross         = [0.300 0.400]; % s
+Timing.WhiteScreen_2 = 0.200; % s
+
+Timing.Instructions  = 5.500; % s
+Timing.FixationCross = 5.000; % s
 
 
 %% Define a planning <--- paradigme
@@ -39,12 +85,36 @@ EP.AddPlanning({ 'StartTime' 0  0 [] });
 
 for p = 1 : size(Paradigme,1)
     
-    EP.AddPlanning({ Paradigme{p,1} NextOnset(EP) 0 [] });
-    
-    switch Paradigme{p,1}
-        case ''
+    if     strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'negative' )
+        
+        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.negative });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        
+        RandVect = Shuffle([1:NbOfTrials]);
+        
+    elseif strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'positive' )
+        
+        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.positive });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        
+    elseif strcmp(Paradigme{p,1}, 'neutral' ) && isempty(Paradigme{p,2}            )
+        
+        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.null     });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        
+    elseif strcmp(Paradigme{p,1}, 'circle'  ) && strcmp(Paradigme{p,2}, 'cross'    )
+        
+        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.circle.cross     });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        
+    elseif strcmp(Paradigme{p,1}, 'cross'   ) && strcmp(Paradigme{p,2}, 'circle'   )
+        
+        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.cross.circle     });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        
+    else
+        error('unrecognized paradigme')
     end
-    
     
 end
 
@@ -52,38 +122,6 @@ end
 % --- Stop ----------------------------------------------------------------
 
 EP.AddPlanning({ 'StopTime' NextOnset(EP) 0 [] });
-
-
-%% Acceleration
-
-if nargout > 0
-    
-    switch DataStruct.OperationMode
-        
-        case 'Acquisition'
-            
-            Speed = 1;
-            
-        case 'FastDebug'
-            
-            Speed = 10;
-            
-            new_onsets = cellfun( @(x) {x/Speed} , EP.Data(:,2) );
-            EP.Data(:,2) = new_onsets;
-            
-            new_durations = cellfun( @(x) {x/Speed} , EP.Data(:,3) );
-            EP.Data(:,3) = new_durations;
-            
-        case 'RealisticDebug'
-            
-            Speed = 1;
-            
-        otherwise
-            error( 'DataStruct.OperationMode = %s' , DataStruct.OperationMode )
-            
-    end
-    
-end
 
 
 %% Display

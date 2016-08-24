@@ -4,7 +4,6 @@ try
     %% Load and prepare all stimuli
     
     Session.LoadStimuli;
-    Session.PrepareStimuli;
     
     
     %% Tunning of the task

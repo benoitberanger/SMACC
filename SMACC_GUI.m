@@ -231,10 +231,50 @@ if isempty(figPtr) % Create the figure
         'Position',[p_env.x p_env.y p_env.w p_env.h],...
         'BackgroundColor',figureBGcolor);
     
-    p_env.nbO    = 2; % Number of objects
+    p_env.nbO    = 3; % Number of objects
     p_env.Ow     = 1/(p_env.nbO + 1); % Object width
     p_env.countO = 0; % Object counter
     p_env.xposO  = @(countO) p_env.Ow/(p_env.nbO+1)*countO + (countO-1)*p_env.Ow;
+    
+    
+    % ---------------------------------------------------------------------
+    % RadioButton : Training
+    
+    p_env.countO = p_env.countO + 1;
+    r_tain.x   = p_env.xposO(p_env.countO);
+    r_tain.y   = 0.1 ;
+    r_tain.w   = p_env.Ow;
+    r_tain.h   = 0.8;
+    r_tain.tag = 'radiobutton_Training';
+    handles.(r_tain.tag) = uicontrol(handles.uipanel_Environement,...
+        'Style','radiobutton',...
+        'Units', 'Normalized',...
+        'Position',[r_tain.x r_tain.y r_tain.w r_tain.h],...
+        'String','Training',...
+        'TooltipString','Training',...
+        'HorizontalAlignment','Center',...
+        'Tag',(r_tain.tag),...
+        'BackgroundColor',figureBGcolor);
+    
+    
+    % ---------------------------------------------------------------------
+    % RadioButton : EEG
+    
+    p_env.countO = p_env.countO + 1;
+    r_eeg.x   = p_env.xposO(p_env.countO);
+    r_eeg.y   = 0.1 ;
+    r_eeg.w   = p_env.Ow;
+    r_eeg.h   = 0.8;
+    r_eeg.tag = 'radiobutton_EEG';
+    handles.(r_eeg.tag) = uicontrol(handles.uipanel_Environement,...
+        'Style','radiobutton',...
+        'Units', 'Normalized',...
+        'Position',[r_eeg.x r_eeg.y r_eeg.w r_eeg.h],...
+        'String','EEG',...
+        'TooltipString','EEG task',...
+        'HorizontalAlignment','Center',...
+        'Tag',(r_eeg.tag),...
+        'BackgroundColor',figureBGcolor);
     
     
     % ---------------------------------------------------------------------
@@ -255,27 +295,7 @@ if isempty(figPtr) % Create the figure
         'HorizontalAlignment','Center',...
         'Tag',(r_mri.tag),...
         'BackgroundColor',figureBGcolor);
-    
-    
-    % ---------------------------------------------------------------------
-    % RadioButton : Training
-    
-    p_env.countO = p_env.countO + 1;
-    r_tain.x   = p_env.xposO(p_env.countO);
-    r_tain.y   = 0.1 ;
-    r_tain.w   = p_env.Ow;
-    r_tain.h   = 0.8;
-    r_tain.tag = 'radiobutton_Training';
-    handles.(r_tain.tag) = uicontrol(handles.uipanel_Environement,...
-        'Style','radiobutton',...
-        'Units', 'Normalized',...
-        'Position',[r_tain.x r_tain.y r_tain.w r_tain.h],...
-        'String','Training',...
-        'TooltipString','Training inside the MRI, just before the scan',...
-        'HorizontalAlignment','Center',...
-        'Tag',(r_tain.tag),...
-        'BackgroundColor',figureBGcolor);
-    
+        
     
     %% Panel : Eyelink mode
     
@@ -513,50 +533,13 @@ if isempty(figPtr) % Create the figure
         'Position',[p_tk.x p_tk.y p_tk.w p_tk.h],...
         'BackgroundColor',figureBGcolor);
     
-    p_tk.nbO    = 4; % Number of objects
+    p_tk.nbO    = 2; % Number of objects
     p_tk.Ow     = 1/(p_tk.nbO + 1); % Object width
     p_tk.countO = 0; % Object counter
     p_tk.xposO  = @(countO) p_tk.Ow/(p_tk.nbO+1)*countO + (countO-1)*p_tk.Ow;
     
     buttun_y = 0.20;
     buttun_h = 0.60;
-    
-    % ---------------------------------------------------------------------
-    % Pushbutton : Calibration
-    
-    p_tk.countO  = p_tk.countO + 1;
-    b_cal.x   = p_tk.xposO(p_tk.countO);
-    b_cal.y   = buttun_y;
-    b_cal.w   = p_tk.Ow;
-    b_cal.h   = buttun_h;
-    b_cal.tag = 'pushbutton_Calibration';
-    handles.(b_cal.tag) = uicontrol(handles.uipanel_Task,...
-        'Style','pushbutton',...
-        'Units', 'Normalized',...
-        'Position',[b_cal.x b_cal.y b_cal.w b_cal.h],...
-        'String','Calibration',...
-        'BackgroundColor',buttonBGcolor,...
-        'Tag',b_cal.tag,...
-        'Callback',@SMACC_main);
-    
-    
-    % ---------------------------------------------------------------------
-    % Pushbutton : Instructions
-    
-    p_tk.countO = p_tk.countO + 1;
-    b_inst.x   = p_tk.xposO(p_tk.countO);
-    b_inst.y   = buttun_y;
-    b_inst.w   = p_tk.Ow;
-    b_inst.h   = buttun_h;
-    b_inst.tag = 'pushbutton_Instructions';
-    handles.(b_inst.tag) = uicontrol(handles.uipanel_Task,...
-        'Style','pushbutton',...
-        'Units', 'Normalized',...
-        'Position',[b_inst.x b_inst.y b_inst.w b_inst.h],...
-        'String','Instructions',...
-        'BackgroundColor',buttonBGcolor,...
-        'Tag',b_inst.tag,...
-        'Callback',@SMACC_main);
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -833,9 +816,9 @@ function edit_SessionNumber_Callback(hObject, ~)
 
 block = str2double(get(hObject,'String'));
 
-if block ~= round(block) || block < 1 || block > 4
+if block ~= round(block) || block < 1
     set(hObject,'String','1');
-    error('Session number must be from 1 to 4')
+    error('Session number must be positive integer')
 end
 
 end % function

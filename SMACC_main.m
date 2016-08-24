@@ -280,18 +280,12 @@ DataStruct.PTB = StartPTB( DataStruct );
 
 %% Task run
 
-switch Task
-    
-    case 'EyelinkCalibration'
-        Eyelink.Calibration( DataStruct.PTB.wPtr );
-        TaskData.ER.Data = {};
-        TaskData.IsEyelinkRreadyToRecord = 1;
-        
-    case 'Session'
-        TaskData = Session.Task( DataStruct );
-        
-    otherwise
-        error('SMACC:Task','Task ?')
+if strcmp(Task,'EyelinkCalibration')
+    Eyelink.Calibration( DataStruct.PTB.wPtr );
+    TaskData.ER.Data = {};
+    TaskData.IsEyelinkRreadyToRecord = 1;
+else
+    TaskData = Session.Task( DataStruct );
 end
 
 DataStruct.TaskData = TaskData;

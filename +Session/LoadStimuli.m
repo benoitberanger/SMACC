@@ -16,11 +16,17 @@ Stimuli = struct;
 %% Image files
 % Stimuli.Image.(filename) = texturePointer;
 
-img_content = dir([DataStruct.Parameters.Path.img '*.bmp']);
-img_name = {img_content.name}';
-img_name = strrep(img_name,'.bmp','');
+contexts = fieldnames(DataStruct.Parameters.Path);
 
-for i = 1 : length(img_content)
-    current_img = imread([DataStruct.Parameters.Path.img img_name{i} '.bmp']);
-    Stimuli.Image.(img_name{i}) = Screen( 'MakeTexture' , DataStruct.PTB.wPtr , current_img );
+for c = 1:length(contexts)
+    
+    img_content = dir([DataStruct.Parameters.Path.(contexts{c}) filesep '*.bmp']);
+    img_name = {img_content.name}';
+    img_name = strrep(img_name,'.bmp','');
+    
+    for i = 1 : length(img_content)
+        current_img = imread([DataStruct.Parameters.Path.(contexts{c}) filesep img_name{i} '.bmp']);
+        Stimuli.(contexts{c}).([contexts{c} '_' img_name{i}]) = Screen( 'MakeTexture' , DataStruct.PTB.wPtr , current_img );
+    end
+    
 end

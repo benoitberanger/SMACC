@@ -10,9 +10,9 @@ function [ Parameters ] = GetParameters( DataStruct )
 %% Paths
 
 % Parameters.Path.wav = ['wav' filesep];
-Parameters.Path.Neg  = ['..' filesep 'NimStim' filesep 'StimNeg' ];
-Parameters.Path.Neut = ['..' filesep 'NimStim' filesep 'StimNeut'];
-Parameters.Path.Pos  = ['..' filesep 'NimStim' filesep 'StimPos' ];
+Parameters.Path.negative = [fileparts(pwd) filesep 'img' filesep 'negative']; % fileparts(pwd) == fill path of the upper directory
+Parameters.Path.neutral  = [fileparts(pwd) filesep 'img' filesep 'neutral' ];
+Parameters.Path.positive = [fileparts(pwd) filesep 'img' filesep 'positive'];
 
 
 %% Set parameters
