@@ -4,7 +4,7 @@ function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
 
 if nargout < 1
     
-    DataStruct.Environement = 'MRI';
+    DataStruct.Environement  = 'MRI';
     DataStruct.OperationMode = 'Acquistion';
     
 end
@@ -65,6 +65,8 @@ Timing.WhiteScreen_2 = 0.200; % s
 Timing.Instructions  = 5.500; % s
 Timing.FixationCross = 5.000; % s
 
+firstGO = 3;
+
 
 %% Define a planning <--- paradigme
 
@@ -83,15 +85,19 @@ EP.AddPlanning({ 'StartTime' 0  0 [] });
 
 % --- Stim ----------------------------------------------------------------
 
+
 for p = 1 : size(Paradigme,1)
     
     if     strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'negative' )
         
         EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.negative });
         EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+
+        % Generate the Go/NoGo sequence
+        [ Sequence ] = PsedoRand2Conditions( NbOfTrials-firstGO , NbOfTrials/2 );
+        RandVect = [zeros(1,firstGO) Sequence];
         
-        RandVect = Shuffle([1:NbOfTrials]);
-        
+
     elseif strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'positive' )
         
         EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.positive });
