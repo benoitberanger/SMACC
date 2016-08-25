@@ -6,6 +6,13 @@ if nargout < 1
     
     DataStruct.Environement  = 'MRI';
     DataStruct.OperationMode = 'Acquistion';
+    osef = struct;
+    for o = 1:50
+        osef.(sprintf('img%d',o)) = 0;
+    end
+    Stimuli.neutral = osef;
+    Stimuli.positive = osef;
+    Stimuli.negative = osef;
     
 end
 
@@ -15,15 +22,16 @@ switch DataStruct.Environement
         Paradigme = {};
     case 'MRI'
         
-        NbOfTrials = 30;
+        nGo = 30;
+        nNoGo = 15;
         
         Paradigme = {
-            %  Go        NoGo    NbOfTrials
-            'neutral' 'negative' NbOfTrials
-            'neutral' 'positive' NbOfTrials
-            'circle'  'cross'    NbOfTrials
-            'cross'   'circle'   NbOfTrials
-            'neutral' []         NbOfTrials
+            %  Go        NoGo    nGo nNoGo
+            'neutral' 'negative' nGo nNoGo
+            'neutral' 'positive' nGo nNoGo
+            'circle'  'cross'    nGo nNoGo
+            'cross'   'circle'   nGo nNoGo
+            'neutral' 'null'     nGo nNoGo
             
             };
         
@@ -36,8 +44,12 @@ switch DataStruct.OperationMode
         
     case 'FastDebug'
         Speed = 10;
+        
         Paradigme(:,3) = cellfun(@(x) {round(x/Speed)},Paradigme(:,3));
-        NbOfTrials = round(NbOfTrials/Speed); %#ok<*NASGU>
+        nGo = round(nGo/Speed);
+        
+        Paradigme(:,4) = cellfun(@(x) {round(x/Speed)},Paradigme(:,4));
+        nNoGo = round(nNoGo/Speed);
         
     case 'RealisticDebug'
         Speed = 1;
@@ -88,38 +100,84 @@ EP.AddPlanning({ 'StartTime' 0  0 [] });
 
 for p = 1 : size(Paradigme,1)
     
-    if     strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'negative' )
+    goContext = Paradigme{p,1};
+    nogoContext = Paradigme{p,2};
+    
+    EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.(goContext).(nogoContext) });
+    EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+    
+    % Generate the Go/NoGo sequence
+    [ Sequence ] = PsedoRand2Conditions( nGo-firstGO , nNoGo );
+    RandVect = [zeros(1,firstGO) Sequence];
+    
+    if ~( strcmp(goContext,'circle') || strcmp(goContext,'cross') )
         
-        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.negative });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
-
-        % Generate the Go/NoGo sequence
-        [ Sequence ] = PsedoRand2Conditions( NbOfTrials-firstGO , NbOfTrials/2 );
-        RandVect = [zeros(1,firstGO) Sequence];
         
-
-    elseif strcmp(Paradigme{p,1}, 'neutral' ) && strcmp(Paradigme{p,2}, 'positive' )
+        % Selecte the Go image from the pull
+        GoImg = struct;
+        GoImg.list = fieldnames( Stimuli.(goContext) ); % *.bmp file names
+        GoImg.list_size = length( GoImg.list ); % how many files
+        GoImg.list_idx_shuffled = Shuffle( 1:GoImg.list_size ); % shuffle all the files
+        GoImg.sequence_idx = GoImg.list_idx_shuffled( 1:nGo ); % take out some random files (index)
+        GoImg.sequence = GoImg.list( GoImg.sequence_idx ); % take out some random files (names)
         
-        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.positive });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        if ~strcmp(nogoContext,'null')
+            
+            % Selecte the NoGo image from the pull
+            NoGoImg = struct;
+            NoGoImg.list = fieldnames( Stimuli.(nogoContext) ); % *.bmp file names
+            NoGoImg.list_size = length( NoGoImg.list ); % how many files
+            NoGoImg.list_idx_shuffled = Shuffle( 1:NoGoImg.list_size ); % shuffle all the files
+            NoGoImg.sequence_idx = NoGoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
+            NoGoImg.sequence = NoGoImg.list( NoGoImg.sequence_idx ); % take out some random files (names)
+            
+        end
         
-    elseif strcmp(Paradigme{p,1}, 'neutral' ) && isempty(Paradigme{p,2}            )
+    end
+    
+    
+    goCount = 0;
+    nogoCount = 0;
+    for trial = 1:length(RandVect)
         
-        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.neutral.null     });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+        switch RandVect(trial)
+            
+            case 0
+                
+                goCount = goCount + 1;
+                
+                switch goContext
+                    case 'cross'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' });
+                    case 'circle'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' });
+                    case 'null'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus [] });
+                    otherwise
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(goContext).(GoImg.sequence{goCount}) });
+                end
+                
+            case 1
+                
+                nogoCount = nogoCount + 1;
+                
+                switch nogoContext
+                    case 'cross'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' });
+                    case 'circle'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' });
+                    case 'null'
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus [] });
+                    otherwise
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(nogoContext).(NoGoImg.sequence{nogoCount}) });
+                end
+                
+        end
         
-    elseif strcmp(Paradigme{p,1}, 'circle'  ) && strcmp(Paradigme{p,2}, 'cross'    )
+        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timing.WhiteScreen_1 'x' });
+        EP.AddPlanning({ 'Cross' NextOnset(EP) (Timing.Cross(1) + (Timing.Cross(2)-Timing.Cross(1))*rand) 'x' });
+        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timing.WhiteScreen_2 'x' });
         
-        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.circle.cross     });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
-        
-    elseif strcmp(Paradigme{p,1}, 'cross'   ) && strcmp(Paradigme{p,2}, 'circle'   )
-        
-        EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.cross.circle     });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
-        
-    else
-        error('unrecognized paradigme')
     end
     
 end
