@@ -2,13 +2,10 @@ function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
 % This function can be executed without input parameters for display
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                         USEFUL PARAMETERS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Paradigm
 
-%% Paradigme
-
-if nargout < 1 % Execution of the function without parameter : for display
+% Execution of the function without parameter : for display
+if nargout < 1
     
     DataStruct.Environement  = 'MRI';
     DataStruct.OperationMode = 'Acquistion';
@@ -23,16 +20,21 @@ if nargout < 1 % Execution of the function without parameter : for display
     
 end
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         USEFUL PARAMETERS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 switch DataStruct.Environement
     
     case 'Training'
-        Paradigme = {};
+        
     case 'MRI'
         
         nGo   = 30; % number of go
         nNoGo = 15; % number of nogo
         
-        Paradigme = {
+        Paradigm = {
             %  Go        NoGo    nGo nNoGo
             'neutral' 'negative' nGo nNoGo
             'neutral' 'positive' nGo nNoGo
@@ -41,6 +43,8 @@ switch DataStruct.Environement
             'neutral' 'null'     nGo nNoGo
             
             };
+        
+    case 'EEG'
         
 end
 
@@ -78,6 +82,7 @@ firstGO = 3; % number of forced Go at the beguining
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Acceleration
+% Reduce the number of stimuli if acceleration
 
 switch DataStruct.OperationMode
     
@@ -87,10 +92,10 @@ switch DataStruct.OperationMode
     case 'FastDebug'
         Speed = 10;
         
-        Paradigme(:,3) = cellfun(@(x) {round(x/Speed)},Paradigme(:,3));
+        Paradigm(:,3) = cellfun(@(x) {round(x/Speed)},Paradigm(:,3));
         nGo = round(nGo/Speed);
         
-        Paradigme(:,4) = cellfun(@(x) {round(x/Speed)},Paradigme(:,4));
+        Paradigm(:,4) = cellfun(@(x) {round(x/Speed)},Paradigm(:,4));
         nNoGo = round(nNoGo/Speed);
         
     case 'RealisticDebug'
@@ -117,10 +122,10 @@ EP.AddPlanning({ 'StartTime' 0  0 [] [] [] [] [] });
 % --- Stim ----------------------------------------------------------------
 
 
-for p = 1 : size(Paradigme,1)
+for p = 1 : size(Paradigm,1)
     
-    goContext = Paradigme{p,1};
-    nogoContext = Paradigme{p,2};
+    goContext = Paradigm{p,1};
+    nogoContext = Paradigm{p,2};
     
     EP.AddPlanning({ 'Instructions'  NextOnset(EP) Timing.Instructions  Instruction.(goContext).(nogoContext) goContext nogoContext [] Instruction.(goContext).(nogoContext) });
     EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross []                                    goContext nogoContext [] '+'                                   });
