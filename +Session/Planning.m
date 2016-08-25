@@ -1,4 +1,5 @@
 function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
+% This function can be executed without input parameters for display
 
 %% Paradigme
 
@@ -6,11 +7,12 @@ if nargout < 1
     
     DataStruct.Environement  = 'MRI';
     DataStruct.OperationMode = 'Acquistion';
+    
     osef = struct;
     for o = 1:50
-        osef.(sprintf('img%d',o)) = 0;
+        osef.(sprintf('img%d',o)) = o;
     end
-    Stimuli.neutral = osef;
+    Stimuli.neutral  = osef;
     Stimuli.positive = osef;
     Stimuli.negative = osef;
     
@@ -22,8 +24,8 @@ switch DataStruct.Environement
         Paradigme = {};
     case 'MRI'
         
-        nGo = 30;
-        nNoGo = 15;
+        nGo   = 30; % number of go
+        nNoGo = 15; % number of nogo
         
         Paradigme = {
             %  Go        NoGo    nGo nNoGo
@@ -59,12 +61,12 @@ end
 
 %% Instructions
 
-%           Go      NoGo         Instructions
-Instruction.neutral.negative = {''};
-Instruction.neutral.positive = {''};
-Instruction.neutral.null     = {''};
-Instruction.circle .cross    = {''};
-Instruction.cross  .circle   = {''};
+%           Go      NoGo        Instructions
+Instruction.neutral.negative = 'neutral.negative';
+Instruction.neutral.positive = 'neutral.positive';
+Instruction.neutral.null     = 'neutral.null';
+Instruction.circle .cross    = 'circle.cross';
+Instruction.cross  .circle   = 'cross.circle';
 
 
 %% Timings
@@ -84,7 +86,7 @@ firstGO = 3;
 
 
 % Create and prepare
-header = { 'event_name' , 'onset(s)' , 'duration(s)' , 'content' };
+header = { 'event_name' , 'onset(s)' , 'duration(s)' , 'content' , 'goContext' , 'nogoContext' , 'go/nogo' , 'content_type' };
 EP     = EventPlanning(header);
 
 % NextOnset = PreviousOnset + PreviousDuration
@@ -93,7 +95,7 @@ NextOnset = @(EP) EP.Data{end,2} + EP.Data{end,3};
 
 % --- Start ---------------------------------------------------------------
 
-EP.AddPlanning({ 'StartTime' 0  0 [] });
+EP.AddPlanning({ 'StartTime' 0  0 [] [] [] [] [] });
 
 % --- Stim ----------------------------------------------------------------
 
@@ -103,80 +105,81 @@ for p = 1 : size(Paradigme,1)
     goContext = Paradigme{p,1};
     nogoContext = Paradigme{p,2};
     
-    EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.(goContext).(nogoContext) });
-    EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] });
+    EP.AddPlanning({ 'Instructions' NextOnset(EP) Timing.Instructions Instruction.(goContext).(nogoContext) goContext nogoContext [] Instruction.(goContext).(nogoContext) });
+    EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross [] goContext nogoContext [] '+'});
     
     % Generate the Go/NoGo sequence
-    [ Sequence ] = PsedoRand2Conditions( nGo-firstGO , nNoGo );
+    [ Sequence ] = PsedoRand2Conditions( nGo-firstGO , nNoGo , 1 );
     RandVect = [zeros(1,firstGO) Sequence];
     
     if ~( strcmp(goContext,'circle') || strcmp(goContext,'cross') )
         
         
         % Selecte the Go image from the pull
-        GoImg = struct;
-        GoImg.list = fieldnames( Stimuli.(goContext) ); % *.bmp file names
-        GoImg.list_size = length( GoImg.list ); % how many files
-        GoImg.list_idx_shuffled = Shuffle( 1:GoImg.list_size ); % shuffle all the files
-        GoImg.sequence_idx = GoImg.list_idx_shuffled( 1:nGo ); % take out some random files (index)
-        GoImg.sequence = GoImg.list( GoImg.sequence_idx ); % take out some random files (names)
+        goImg = struct;
+        goImg.list = fieldnames( Stimuli.(goContext) ); % *.bmp file names
+        goImg.list_size = length( goImg.list ); % how many files
+        goImg.list_idx_shuffled = Shuffle( 1:goImg.list_size ); % shuffle all the files
+        goImg.sequence_idx = goImg.list_idx_shuffled( 1:nGo ); % take out some random files (index)
+        goImg.sequence = goImg.list( goImg.sequence_idx ); % take out some random files (names)
         
         if ~strcmp(nogoContext,'null')
             
             % Selecte the NoGo image from the pull
-            NoGoImg = struct;
-            NoGoImg.list = fieldnames( Stimuli.(nogoContext) ); % *.bmp file names
-            NoGoImg.list_size = length( NoGoImg.list ); % how many files
-            NoGoImg.list_idx_shuffled = Shuffle( 1:NoGoImg.list_size ); % shuffle all the files
-            NoGoImg.sequence_idx = NoGoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
-            NoGoImg.sequence = NoGoImg.list( NoGoImg.sequence_idx ); % take out some random files (names)
+            nogoImg = struct;
+            nogoImg.list = fieldnames( Stimuli.(nogoContext) ); % *.bmp file names
+            nogoImg.list_size = length( nogoImg.list ); % how many files
+            nogoImg.list_idx_shuffled = Shuffle( 1:nogoImg.list_size ); % shuffle all the files
+            nogoImg.sequence_idx = nogoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
+            nogoImg.sequence = nogoImg.list( nogoImg.sequence_idx ); % take out some random files (names)
             
         end
         
     end
     
     
-    goCount = 0;
-    nogoCount = 0;
+    goCount   = 0; % counter
+    nogoCount = 0; % counter
+    
     for trial = 1:length(RandVect)
         
         switch RandVect(trial)
             
-            case 0
+            case 0 % Go
                 
                 goCount = goCount + 1;
                 
                 switch goContext
                     case 'cross'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' goContext nogoContext RandVect(trial) 'x' });
                     case 'circle'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' goContext nogoContext RandVect(trial) 'o' });
                     case 'null'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus [] });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []  goContext nogoContext RandVect(trial) [] });
                     otherwise
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(goContext).(GoImg.sequence{goCount}) });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(goContext).(goImg.sequence{goCount}) goContext nogoContext RandVect(trial) goImg.sequence{goCount} });
                 end
                 
-            case 1
+            case 1 % NoGo
                 
                 nogoCount = nogoCount + 1;
                 
                 switch nogoContext
                     case 'cross'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x' goContext nogoContext RandVect(trial) 'x' });
                     case 'circle'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o' goContext nogoContext RandVect(trial) 'o' });
                     case 'null'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus [] });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []  goContext nogoContext RandVect(trial) [] });
                     otherwise
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(nogoContext).(NoGoImg.sequence{nogoCount}) });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(nogoContext).(nogoImg.sequence{nogoCount}) goContext nogoContext RandVect(trial) nogoImg.sequence{nogoCount} });
                 end
                 
         end
         
-        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timing.WhiteScreen_1 'x' });
-        EP.AddPlanning({ 'Cross' NextOnset(EP) (Timing.Cross(1) + (Timing.Cross(2)-Timing.Cross(1))*rand) 'x' });
-        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timing.WhiteScreen_2 'x' });
+        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timing.WhiteScreen_1 [] goContext nogoContext RandVect(trial) 'ws' });
+        EP.AddPlanning({ 'Cross' NextOnset(EP) (Timing.Cross(1) + (Timing.Cross(2)-Timing.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+' });
+        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timing.WhiteScreen_2 [] goContext nogoContext RandVect(trial) 'ws' });
         
     end
     
@@ -185,7 +188,7 @@ end
 
 % --- Stop ----------------------------------------------------------------
 
-EP.AddPlanning({ 'StopTime' NextOnset(EP) 0 [] });
+EP.AddPlanning({ 'StopTime' NextOnset(EP) 0 [] [] [] [] [] });
 
 
 %% Display
