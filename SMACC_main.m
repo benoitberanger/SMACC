@@ -1,5 +1,5 @@
 function SMACC_main(hObject, ~)
-% This function should not be called directely, only through the GUI : SMACC_HUI
+% This function should not be called directely, only through the GUI : SMACC_GUI
 
 if nargin == 0
     
@@ -304,7 +304,7 @@ save([fileparts(pwd) filesep 'data' filesep 'LastDataStruct'],'DataStruct');
 try
     
     Screen('CloseAll'); % Close PTB window
-    
+    ShowCursor;
     Priority( DataStruct.PTB.oldLevel );
     
 catch err

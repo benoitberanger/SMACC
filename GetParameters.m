@@ -30,7 +30,7 @@ Parameters.Video.ScreenHeightM   = 0.030; % m
 switch DataStruct.Task
     
     case 'Session'
-        Parameters.Video.ScreenBackgroundColor = [255 255 255]; % [R G B] ( from 0 to 255 )
+        Parameters.Video.ScreenBackgroundColor = [255 255 255]/2; % [R G B] ( from 0 to 255 )
         
     case 'EyelinkCalibration'
         Parameters.Video.ScreenBackgroundColor = [128 128 128]; % [R G B] ( from 0 to 255 )
@@ -49,9 +49,10 @@ Parameters.Text.Color = [0 0 0]; % [R G B] ( from 0 to 255 )
 %%%%%%%%%%%%%%%%%%%%%%
 %   Fixation cross   %
 %%%%%%%%%%%%%%%%%%%%%%
-Parameters.FixationCross.ScreenRatio    = 1/30;    % ratio : FixCrossDimPx       = ScreenWide*ration
-Parameters.FixationCross.lineWidthRatio = 1/10;    % ratio : FixCrossLineWidthPx = FixCrossDimPx*ration
-Parameters.FixationCross.Color      = [0 0 0]; % [R G B] ( from 0 to 255 )
+Parameters.FixationCross.ScreenRatio    = 1/30;      % ratio : FixCrossDimPx       = ScreenWidePix*ration
+Parameters.FixationCross.lineWidthRatio = 1/10;      % ratio : FixCrossLineWidthPx = FixCrossDimPx*ration
+Parameters.FixationCross.BaseColor      = [0   0 0]; % [R G B] ( from 0 to 255 )
+Parameters.FixationCross.WrongColor     = [255 0 0]; % [R G B] ( from 0 to 255 )
 
 
 %%%%%%%%%
@@ -97,10 +98,10 @@ Parameters.Keybinds.emulTTL_s_ASCII      = KbName('s');
 Parameters.Keybinds.Stop_Escape_ASCII    = KbName('ESCAPE');
 
 Parameters.Keybinds.Right_Blue_b_ASCII   = KbName('b');
-Parameters.Keybinds.Left_Yellow_y_ASCII  = KbName('y');
+% Parameters.Keybinds.Left_Yellow_y_ASCII  = KbName('y');
 
-Parameters.Keybinds.LeftArrow            = KbName('LeftArrow');
-Parameters.Keybinds.RightArrow           = KbName('RightArrow');
+% Parameters.Keybinds.LeftArrow            = KbName('LeftArrow');
+% Parameters.Keybinds.RightArrow           = KbName('RightArrow');
 
 
 %% Echo in command window

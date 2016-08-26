@@ -75,12 +75,13 @@ try
         clic_spot.R = ~cellfun(@isempty,clic_spot.R);
         clic_spot.R = find(clic_spot.R);
         
-        clic_spot.L = regexp(DataStruct.TaskData.KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keybinds.Left_Yellow_y_ASCII));
-        clic_spot.L = ~cellfun(@isempty,clic_spot.L);
-        clic_spot.L = find(clic_spot.L);
+        % clic_spot.L = regexp(DataStruct.TaskData.KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keybinds.Left_Yellow_y_ASCII));
+        % clic_spot.L = ~cellfun(@isempty,clic_spot.L);
+        % clic_spot.L = find(clic_spot.L);
         
         count = 0 ;
-        Sides = {'R' ; 'L'};
+        % Sides = {'R' ; 'L'};
+        Sides = {'R'};
         for side = 1:length(Sides)
             
             count = count + 1 ;

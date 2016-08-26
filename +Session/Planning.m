@@ -1,4 +1,4 @@
-function [ EP , Stimuli ] = Planning( DataStruct , Stimuli )
+function [ EP , nGo , nNoGo , Paradigm , Instructions , Timings , firstGO ] = Planning( DataStruct , Stimuli )
 % This function can be executed without input parameters for display
 
 
@@ -8,8 +8,7 @@ function [ EP , Stimuli ] = Planning( DataStruct , Stimuli )
 if nargout < 1
     
     DataStruct.Environement  = 'MRI';
-%     DataStruct.OperationMode = 'Acquistion';
-    DataStruct.OperationMode = 'FastDebug';
+    DataStruct.OperationMode = 'Acquistion';
     
     osef = struct;
     for o = 1:50
@@ -56,23 +55,23 @@ end % switch
 % is very easy to read the code, but has no real meaning as a MATLAB code.
 
 %           Go      NoGo        Instructions
-Instruction.neutral.negative = 'Go=neutral NoGo=negative';
-Instruction.neutral.positive = 'Go=neutral NoGo=positive';
-Instruction.neutral.null     = 'Go=neutral NoGo=null';
-Instruction.circle .cross    = 'Go=circle NoGo=cross';
-Instruction.cross  .circle   = 'Go=cross NoGo=circle';
+Instructions.neutral.negative = 'Go=neutral NoGo=negative';
+Instructions.neutral.positive = 'Go=neutral NoGo=positive';
+Instructions.neutral.null     = 'Go=neutral NoGo=null';
+Instructions.circle .cross    = 'Go=circle NoGo=cross';
+Instructions.cross  .circle   = 'Go=cross NoGo=circle';
 
 
 %% Timings
 
 % All Timings are in secondes
-Timing.Stimulus      = 0.300;
-Timing.WhiteScreen_1 = 0.250;
-Timing.Cross         = [0.300 0.400]; % interval for the jitter
-Timing.WhiteScreen_2 = 0.200;
+Timings.Stimulus      = 0.300;
+Timings.WhiteScreen_1 = 0.250;
+Timings.Cross         = [0.300 0.400]; % interval for the jitter
+Timings.WhiteScreen_2 = 0.200;
 
-Timing.Instructions  = 5.500;
-Timing.FixationCross = 5.000;
+Timings.Instructions  = 5.500;
+Timings.FixationCross = 5.000;
 
 
 firstGO = 3; % number of forced Go at the beguining
@@ -97,11 +96,11 @@ switch DataStruct.OperationMode
         
         nNoGo = 1;
         Paradigm(:,4) = num2cell(ones(size(Paradigm,1),1)*nNoGo);
-
+        
         firstGO = 0;
-        Timing.Instructions  = Timing.Instructions/10;
-        Timing.FixationCross = Timing.FixationCross/10;
-
+        Timings.Instructions  = Timings.Instructions/10;
+        Timings.FixationCross = Timings.FixationCross/10;
+        
         
     case 'RealisticDebug'
         
@@ -132,8 +131,9 @@ for p = 1 : size(Paradigm,1)
     goContext = Paradigm{p,1};
     nogoContext = Paradigm{p,2};
     
-    EP.AddPlanning({ 'Instructions'  NextOnset(EP) Timing.Instructions  Instruction.(goContext).(nogoContext) goContext nogoContext [] Instruction.(goContext).(nogoContext) });
-    EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timing.FixationCross []                                    goContext nogoContext [] '+'                                   });
+    EP.AddPlanning({ 'Instructions'  NextOnset(EP) Timings.Instructions  Instructions.(goContext).(nogoContext) goContext nogoContext -1 Instructions.(goContext).(nogoContext) });
+    EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timings.FixationCross []                                     goContext nogoContext -1 '+'                                   });
+    
     
     % Generate the Go/NoGo sequence
     Sequence = PsedoRand2Conditions( nGo-firstGO , nNoGo , 1 );
@@ -169,6 +169,8 @@ for p = 1 : size(Paradigm,1)
     
     for trial = 1:length(RandVect)
         
+        
+        
         switch RandVect(trial)
             
             case 0 % Go
@@ -177,13 +179,13 @@ for p = 1 : size(Paradigm,1)
                 
                 switch goContext
                     case 'cross'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x'                                           goContext nogoContext RandVect(trial) 'x'                     });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus 'x'                                           goContext nogoContext RandVect(trial) 'x'                     });
                     case 'circle'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o'                                           goContext nogoContext RandVect(trial) 'o'                     });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus 'o'                                           goContext nogoContext RandVect(trial) 'o'                     });
                     case 'null'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []                                            goContext nogoContext RandVect(trial) []                      });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus []                                            goContext nogoContext RandVect(trial) []                      });
                     otherwise
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(goContext).(goImg.sequence{goCount}) goContext nogoContext RandVect(trial) goImg.sequence{goCount} });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus Stimuli.(goContext).(goImg.sequence{goCount}) goContext nogoContext RandVect(trial) goImg.sequence{goCount} });
                 end % switch
                 
             case 1 % NoGo
@@ -192,20 +194,20 @@ for p = 1 : size(Paradigm,1)
                 
                 switch nogoContext
                     case 'cross'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'x'                                                 goContext nogoContext RandVect(trial) 'x'                         });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus 'x'                                                 goContext nogoContext RandVect(trial) 'x'                         });
                     case 'circle'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus 'o'                                                 goContext nogoContext RandVect(trial) 'o'                         });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus 'o'                                                 goContext nogoContext RandVect(trial) 'o'                         });
                     case 'null'
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []                                                  goContext nogoContext RandVect(trial) []                          });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus []                                                  goContext nogoContext RandVect(trial) []                          });
                     otherwise
-                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(nogoContext).(nogoImg.sequence{nogoCount}) goContext nogoContext RandVect(trial) nogoImg.sequence{nogoCount} });
+                        EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timings.Stimulus Stimuli.(nogoContext).(nogoImg.sequence{nogoCount}) goContext nogoContext RandVect(trial) nogoImg.sequence{nogoCount} });
                 end % switch
                 
         end % switch
         
-        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timing.WhiteScreen_1                                       [] goContext nogoContext RandVect(trial) 'ws' });
-        EP.AddPlanning({ 'Cross'         NextOnset(EP) (Timing.Cross(1) + (Timing.Cross(2)-Timing.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+' });
-        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timing.WhiteScreen_2                                       [] goContext nogoContext RandVect(trial) 'ws' });
+        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timings.WhiteScreen_1                                       [] goContext nogoContext RandVect(trial) 'ws' });
+        EP.AddPlanning({ 'Cross'         NextOnset(EP) (Timings.Cross(1) + (Timings.Cross(2)-Timings.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+' });
+        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timings.WhiteScreen_2                                       [] goContext nogoContext RandVect(trial) 'ws' });
         
     end % for
     

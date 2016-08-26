@@ -8,7 +8,7 @@ try
     
     %% Tunning of the task
     
-    [ EP , Stimuli ] = Session.Planning( DataStruct , Stimuli ); %#ok<*ASGLU,NODEF>
+    [ EP , nGo , nNoGo , Paradigm , Instructions , Timings , firstGO ] = Session.Planning( DataStruct , Stimuli ); %#ok<*ASGLU>
     
     % End of preparations
     EP.BuildGraph;
@@ -34,20 +34,16 @@ try
     
     event_onset = 0;
     Exit_flag = 0;
+    wrong_click = 0;
+    too_late = 0;
+    last_stimulus_onset = [];
+    secs = 0;
+    once = 0;
     
-    %     wrapat = 1;
-    %     vSpacing = 1;
-    %     DrawFormattedText(DataStruct.PTB.wPtr,...
-    %         EP.Data{evt,4},...
-    %         'center',...
-    %         'center',...
-    %         [0 0 0],...
-    %         wrapat,...
-    %         [],[],...
-    %         vSpacing,...
-    %         [],...
-    %         []);
-                            
+    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross) - 1;
+    
+    FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
+    
     % Loop over the EventPlanning
     for evt = 1 : size( EP.Data , 1 )
         
@@ -65,66 +61,103 @@ try
                 
             otherwise
                 
-                frame_counter = 0;
-                
-                while event_onset < StartTime + EP.Data{evt+1,2} - DataStruct.PTB.slack * 1
+                switch EP.Data{evt,1}
                     
-                    frame_counter = frame_counter + 1;
+                    case 'Instructions'
+                        DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},...
+                            'center','center',DataStruct.Parameters.Text.Color);
+                        
+                    case 'FixationCross'
+                        Common.DrawFixation;
+                        
+                    case 'Stimulus'
+                        
+                        wrong_click = 0;
+                        once = 0;
+                        too_late = 0;
+                        
+                        FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
+                        
+                        if isempty(EP.Data{evt,4})
+                            
+                        elseif isnumeric(EP.Data{evt,4})
+                            Screen('DrawTexture',DataStruct.PTB.wPtr,EP.Data{evt,4})
+                            
+                        elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'x')
+                            Common.DrawX;
+                            
+                        elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'o')
+                            Common.DrawO;
+                            
+                        end % if
+                        
+                    case 'WhiteScreen_1'
+                        % do nothing
+                        
+                    case 'Cross'
+                        Common.DrawFixation;
+                        
+                    case 'WhiteScreen_2'
+                        % do nothing
+                        
+                end % switch
+                
+                % Flip
+                event_onset = Screen('Flip',DataStruct.PTB.wPtr, StartTime + EP.Data{evt,2} - DataStruct.PTB.slack * 1 );
+                
+                % Save onset
+                ER.AddEvent({ EP.Data{evt,1} event_onset-StartTime })
+                
+                % Reference for RT
+                if strcmp(EP.Data{evt,1},'Stimulus')
+                    
+                    last_stimulus_onset = event_onset;
+                    
+                    switch EP.Data{evt,7}
+                        case 0
+                            RR.AddEvent({'Go' event_onset-StartTime EP.Data{evt+4,2}-EP.Data{evt,2}});
+                            
+                        case 1
+                            RR.AddEvent({'NoGo' event_onset-StartTime EP.Data{evt+4,2}-EP.Data{evt,2}});
+                    end
+                    
+                end
+                
+                while secs < StartTime + EP.Data{evt+1,2} - 0.002
                     
                     % ESCAPE key pressed ?
                     Common.Interrupt;
                     
-                    switch EP.Data{evt,1}
-                        
-                        case 'Instructions'
-                            DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},...
-                                'center','center',DataStruct.Parameters.Text.Color);
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                            
-                        case 'FixationCross'
-                            Common.DrawFixation;
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                            
-                        case 'Stimulus'
-                            if isempty(EP.Data{evt,4})
-                                
-                            elseif isnumeric(EP.Data{evt,4})
-                                Screen('DrawTexture',DataStruct.PTB.wPtr,EP.Data{evt,4})
-                                
-                            elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'x')
-                                Common.DrawX;
-                                
-                            elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'o')
-                                Common.DrawO;
-                                
-                            end % if
-                            
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                        
-                        case 'WhiteScreen_1'
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                        
-                        case 'Cross'
-                            Common.DrawFixation;
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                        
-                        case 'WhiteScreen_2'
-                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
-                            
-                        otherwise
-                            event_onset = GetSecs;
-                            % error('Unrecognzed condition : %s',EP.Data{evt,1})
-                            
-                    end % switch
+                    RT = secs - last_stimulus_onset;
                     
-                    Common.Movie.AddFrameToMovie;
+                    % Go and too late
+                    if EP.Data{evt,7} == 0 && RT > maxRT
+                        too_late = 1;
+                    end % if
                     
-                    if frame_counter == 1
-                        % Save onset
-                        ER.AddEvent({ EP.Data{evt,1} event_onset-StartTime })
+                    % NoGo and press button
+                    if EP.Data{evt,7} == 1 && keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
+                        wrong_click = 1;
+                    end % if
+                    
+                    if strcmp(EP.Data{evt,1},'Cross') && ( wrong_click || too_late )&& ~once
+                        
+                        FixationCrossColor = DataStruct.Parameters.FixationCross.WrongColor;
+                        Common.DrawFixation; % fixation cross changes color
+                        event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                        if wrong_click
+                            txt = 'Cross.wrong_click';
+                        elseif too_late
+                            txt = 'Cross.too_late';
+                        end
+                        RR.AddEvent({ txt event_onset-StartTime 0});
+                        once = 1;
+                        
                     end % if
                     
                 end % while
+                
+                FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
                 
         end % switch
         

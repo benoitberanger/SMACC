@@ -5,5 +5,5 @@ StopTime = WaitSecs('UntilTime', StartTime + ER.Data{ER.EventCount,2} + EP.Data{
 ER.AddStopTime( 'StopTime' , StopTime - StartTime );
 RR.AddEvent( { 'StopTime' , StopTime - StartTime , 0 } );
 
-ShowCursor;
-Priority( DataStruct.PTB.oldLevel );
+% ShowCursor;
+% Priority( DataStruct.PTB.oldLevel );
