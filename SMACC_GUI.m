@@ -1,4 +1,6 @@
 function varargout = SMACC_GUI
+% Run this function start a GUI that will handle the whole stimulation
+% process and parameters
 
 % global handles
 

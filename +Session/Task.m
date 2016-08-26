@@ -8,7 +8,7 @@ try
     
     %% Tunning of the task
     
-    [ EP , Stimuli , Speed ] = Session.Planning( DataStruct , Stimuli ); %#ok<*ASGLU,NODEF>
+    [ EP , Stimuli ] = Session.Planning( DataStruct , Stimuli ); %#ok<*ASGLU,NODEF>
     
     % End of preparations
     EP.BuildGraph;
@@ -35,6 +35,19 @@ try
     event_onset = 0;
     Exit_flag = 0;
     
+    %     wrapat = 1;
+    %     vSpacing = 1;
+    %     DrawFormattedText(DataStruct.PTB.wPtr,...
+    %         EP.Data{evt,4},...
+    %         'center',...
+    %         'center',...
+    %         [0 0 0],...
+    %         wrapat,...
+    %         [],[],...
+    %         vSpacing,...
+    %         [],...
+    %         []);
+                            
     % Loop over the EventPlanning
     for evt = 1 : size( EP.Data , 1 )
         
@@ -63,31 +76,60 @@ try
                     
                     switch EP.Data{evt,1}
                         
-                        case 'cross'
+                        case 'Instructions'
+                            DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},'center','center',[0 0 0])
+                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                            
+                        case 'FixationCross'
                             Common.DrawFixation;
+                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                            
+                        case 'Stimulus'
+                            if isempty(EP.Data{evt,4})
+                                
+                            elseif isnumeric(EP.Data{evt,4})
+                                Screen('DrawTexture',DataStruct.PTB.wPtr,EP.Data{evt,4})
+                                
+                            elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'x')
+                                DrawFormattedText(DataStruct.PTB.wPtr, 'x','center','center',[0 0 0]);
+                                
+                            elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'o')
+                                DrawFormattedText(DataStruct.PTB.wPtr, 'o','center','center',[0 0 0]);
+                                
+                            end % if
+                            
+                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                        
+                        case 'WhiteScreen_1'
+                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                        
+                        case 'Cross'
+                            Common.DrawFixation;
+                            event_onset = Screen('Flip',DataStruct.PTB.wPtr);
+                        
+                        case 'WhiteScreen_2'
                             event_onset = Screen('Flip',DataStruct.PTB.wPtr);
                             
                         otherwise
                             event_onset = GetSecs;
                             % error('Unrecognzed condition : %s',EP.Data{evt,1})
                             
-                    end
+                    end % switch
                     
                     Common.Movie.AddFrameToMovie;
                     
                     if frame_counter == 1
                         % Save onset
                         ER.AddEvent({ EP.Data{evt,1} event_onset-StartTime })
-                    end
+                    end % if
                     
                 end % while
-                
                 
         end % switch
         
         if Exit_flag
             break %#ok<*UNRCH>
-        end
+        end % if
         
         
     end % for
@@ -105,6 +147,6 @@ catch err %#ok<*NASGU>
     
     Common.Catch;
     
-end
+end % try catch
 
-end
+end % function

@@ -1,4 +1,5 @@
 function SMACC_main(hObject, ~)
+% This function should not be called directely, only through the GUI : SMACC_HUI
 
 if nargin == 0
     

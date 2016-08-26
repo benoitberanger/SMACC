@@ -1,4 +1,4 @@
-function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
+function [ EP , Stimuli ] = Planning( DataStruct , Stimuli )
 % This function can be executed without input parameters for display
 
 
@@ -8,7 +8,8 @@ function [ EP , Stimuli , Speed ] = Planning( DataStruct , Stimuli )
 if nargout < 1
     
     DataStruct.Environement  = 'MRI';
-    DataStruct.OperationMode = 'Acquistion';
+%     DataStruct.OperationMode = 'Acquistion';
+    DataStruct.OperationMode = 'FastDebug';
     
     osef = struct;
     for o = 1:50
@@ -18,7 +19,7 @@ if nargout < 1
     Stimuli.positive = osef;
     Stimuli.negative = osef;
     
-end
+end % if
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,7 +47,7 @@ switch DataStruct.Environement
         
     case 'EEG'
         
-end
+end % switch
 
 
 %% Instructions
@@ -87,21 +88,25 @@ firstGO = 3; % number of forced Go at the beguining
 switch DataStruct.OperationMode
     
     case 'Acquisition'
-        Speed = 1;
+        
         
     case 'FastDebug'
-        Speed = 10;
         
-        Paradigm(:,3) = cellfun(@(x) {round(x/Speed)},Paradigm(:,3));
-        nGo = round(nGo/Speed);
+        nGo = 1;
+        Paradigm(:,3) = num2cell(ones(size(Paradigm,1),1)*nGo);
         
-        Paradigm(:,4) = cellfun(@(x) {round(x/Speed)},Paradigm(:,4));
-        nNoGo = round(nNoGo/Speed);
+        nNoGo = 1;
+        Paradigm(:,4) = num2cell(ones(size(Paradigm,1),1)*nNoGo);
+
+        firstGO = 0;
+        Timing.Instructions  = Timing.Instructions/10;
+        Timing.FixationCross = Timing.FixationCross/10;
+
         
     case 'RealisticDebug'
-        Speed = 1;
         
-end
+        
+end % switch
 
 
 %% Define a planning <--- paradigme
@@ -154,9 +159,9 @@ for p = 1 : size(Paradigm,1)
             nogoImg.sequence_idx      = nogoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
             nogoImg.sequence          = nogoImg.list( nogoImg.sequence_idx ); % take out some random files (names)
             
-        end
+        end % if
         
-    end
+    end % if
     
     
     goCount   = 0; % counter
@@ -179,7 +184,7 @@ for p = 1 : size(Paradigm,1)
                         EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []                                            goContext nogoContext RandVect(trial) []                      });
                     otherwise
                         EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(goContext).(goImg.sequence{goCount}) goContext nogoContext RandVect(trial) goImg.sequence{goCount} });
-                end
+                end % switch
                 
             case 1 % NoGo
                 
@@ -194,17 +199,17 @@ for p = 1 : size(Paradigm,1)
                         EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus []                                                  goContext nogoContext RandVect(trial) []                          });
                     otherwise
                         EP.AddPlanning({ 'Stimulus' NextOnset(EP) Timing.Stimulus Stimuli.(nogoContext).(nogoImg.sequence{nogoCount}) goContext nogoContext RandVect(trial) nogoImg.sequence{nogoCount} });
-                end
+                end % switch
                 
-        end
+        end % switch
         
         EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timing.WhiteScreen_1                                       [] goContext nogoContext RandVect(trial) 'ws' });
         EP.AddPlanning({ 'Cross'         NextOnset(EP) (Timing.Cross(1) + (Timing.Cross(2)-Timing.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+' });
         EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timing.WhiteScreen_2                                       [] goContext nogoContext RandVect(trial) 'ws' });
         
-    end
+    end % for
     
-end
+end % for
 
 
 % --- Stop ----------------------------------------------------------------
@@ -225,6 +230,6 @@ if nargout < 1
     
     EP.Plot
     
-end
+end % if
 
-end
+end % function

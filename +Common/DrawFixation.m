@@ -14,4 +14,4 @@ lineWidthPix = 2;
 % Draw the fixation cross in white, set it to the center of our screen and
 % set good quality antialiasing
 Screen('DrawLines', DataStruct.PTB.wPtr, allCoords,...
-    lineWidthPix, [255 255 255], [DataStruct.PTB.CenterH DataStruct.PTB.CenterV]);
+    lineWidthPix, [0 0 0], [DataStruct.PTB.CenterH DataStruct.PTB.CenterV]);
