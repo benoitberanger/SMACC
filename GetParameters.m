@@ -10,7 +10,7 @@ function [ Parameters ] = GetParameters( DataStruct )
 %% Paths
 
 % Parameters.Path.wav = ['wav' filesep];
-Parameters.Path.negative = [fileparts(pwd) filesep 'img' filesep 'negative']; % fileparts(pwd) == fill path of the upper directory
+Parameters.Path.negative = [fileparts(pwd) filesep 'img' filesep 'negative']; % fileparts(pwd) == path of the upper directory
 Parameters.Path.neutral  = [fileparts(pwd) filesep 'img' filesep 'neutral' ];
 Parameters.Path.positive = [fileparts(pwd) filesep 'img' filesep 'positive'];
 
@@ -41,9 +41,32 @@ end
 %%%%%%%%%%%%
 %   Text   %
 %%%%%%%%%%%%
-Parameters.Text.Size  = 18;
+Parameters.Text.Size  = 40;
 Parameters.Text.Font  = 'Courier New';
-Parameters.Text.Color = [255 255 255]; % [R G B] ( from 0 to 255 )
+Parameters.Text.Color = [0 0 0]; % [R G B] ( from 0 to 255 )
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+%   Fixation cross   %
+%%%%%%%%%%%%%%%%%%%%%%
+Parameters.FixationCross.ScreenRatio    = 1/30;    % ratio : FixCrossDimPx       = ScreenWide*ration
+Parameters.FixationCross.lineWidthRatio = 1/10;    % ratio : FixCrossLineWidthPx = FixCrossDimPx*ration
+Parameters.FixationCross.Color      = [0 0 0]; % [R G B] ( from 0 to 255 )
+
+
+%%%%%%%%%
+%   X   %
+%%%%%%%%%
+Parameters.X.ScreenRatio    = 1/20;    % ratio : FixCrossDimPx       = ScreenWide*ration
+Parameters.X.lineWidthRatio = 1/10;    % ratio : FixCrossLineWidthPx = FixCrossDimPx*ration
+Parameters.X.Color          = [0 0 0]; % [R G B] ( from 0 to 255 )
+
+%%%%%%%%%
+%   O   %
+%%%%%%%%%
+Parameters.O.ScreenRatio    = 1/20;    % ratio : FixCrossDimPx       = ScreenWide*ration
+Parameters.O.lineWidthRatio = 1/10;    % ratio : FixCrossLineWidthPx = FixCrossDimPx*ration
+Parameters.O.Color          = [0 0 0]; % [R G B] ( from 0 to 255 )
 
 
 %%%%%%%%%%%

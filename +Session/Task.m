@@ -77,7 +77,8 @@ try
                     switch EP.Data{evt,1}
                         
                         case 'Instructions'
-                            DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},'center','center',[0 0 0])
+                            DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},...
+                                'center','center',DataStruct.Parameters.Text.Color);
                             event_onset = Screen('Flip',DataStruct.PTB.wPtr);
                             
                         case 'FixationCross'
@@ -91,10 +92,10 @@ try
                                 Screen('DrawTexture',DataStruct.PTB.wPtr,EP.Data{evt,4})
                                 
                             elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'x')
-                                DrawFormattedText(DataStruct.PTB.wPtr, 'x','center','center',[0 0 0]);
+                                Common.DrawX;
                                 
                             elseif ischar(EP.Data{evt,4}) && strcmp(EP.Data{evt,4},'o')
-                                DrawFormattedText(DataStruct.PTB.wPtr, 'o','center','center',[0 0 0]);
+                                Common.DrawO;
                                 
                             end % if
                             
