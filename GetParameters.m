@@ -30,7 +30,7 @@ Parameters.Video.ScreenHeightM   = 0.030; % m
 switch DataStruct.Task
     
     case 'Session'
-        Parameters.Video.ScreenBackgroundColor = [255 255 255]/2; % [R G B] ( from 0 to 255 )
+        Parameters.Video.ScreenBackgroundColor = [255 255 255]; % [R G B] ( from 0 to 255 )
         
     case 'EyelinkCalibration'
         Parameters.Video.ScreenBackgroundColor = [128 128 128]; % [R G B] ( from 0 to 255 )

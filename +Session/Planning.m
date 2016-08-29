@@ -25,36 +25,49 @@ end % if
 %                         USEFUL PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+nGo   = 30; % number of go
+nNoGo = 15; % number of nogo
+
+List = {
+    %  Go        NoGo    nGo nNoGo
+    'neutral' 'negative' nGo nNoGo
+    'neutral' 'positive' nGo nNoGo
+    'circle'  'cross'    nGo nNoGo
+    'cross'   'circle'   nGo nNoGo
+    'neutral' 'null'     nGo nNoGo
+    
+    };
+
 switch DataStruct.Environement
     
     case 'Training'
         
+        nList = 1; % number of shuffled list we will play
+        
     case 'MRI'
         
-        nGo   = 30; % number of go
-        nNoGo = 15; % number of nogo
-        
-        Paradigm = {
-            %  Go        NoGo    nGo nNoGo
-            'neutral' 'negative' nGo nNoGo
-            'neutral' 'positive' nGo nNoGo
-            'circle'  'cross'    nGo nNoGo
-            'cross'   'circle'   nGo nNoGo
-            'neutral' 'null'     nGo nNoGo
-            
-            };
+        nList = 1; % number of shuffled list we will play
         
     case 'EEG'
         
+        nList = 4; % number of shuffled list we will play
+        
 end % switch
 
+% Fill the Paradigm with shuffled lists
+Paradigm = {}; % initilize
+for l = 1 : nList
+    conditionOrder = Shuffle(1:size(List,1));
+    shuffledList   = List(conditionOrder,:);
+    Paradigm = [Paradigm ; shuffledList]; %#ok<AGROW>
+end % for
 
 %% Instructions
 % Here I used a structure just because we can access it dynamiclay via
 % strings. Here this 'keys' (strings) are the different contexts. Thus it
 % is very easy to read the code, but has no real meaning as a MATLAB code.
 
-%           Go      NoGo        Instructions
+%            Go      NoGo        Instructions
 Instructions.neutral.negative = 'Go=neutral NoGo=negative';
 Instructions.neutral.positive = 'Go=neutral NoGo=positive';
 Instructions.neutral.null     = 'Go=neutral NoGo=null';
@@ -159,6 +172,11 @@ for p = 1 : size(Paradigm,1)
             nogoImg.sequence_idx      = nogoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
             nogoImg.sequence          = nogoImg.list( nogoImg.sequence_idx ); % take out some random files (names)
             
+        else
+            
+            % Control blocks only have Go conditions
+            RandVect = zeros(1, nGo );
+            
         end % if
         
     end % if
@@ -168,8 +186,6 @@ for p = 1 : size(Paradigm,1)
     nogoCount = 0; % counter
     
     for trial = 1:length(RandVect)
-        
-        
         
         switch RandVect(trial)
             
@@ -205,9 +221,9 @@ for p = 1 : size(Paradigm,1)
                 
         end % switch
         
-        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timings.WhiteScreen_1                                       [] goContext nogoContext RandVect(trial) 'ws' });
-        EP.AddPlanning({ 'Cross'         NextOnset(EP) (Timings.Cross(1) + (Timings.Cross(2)-Timings.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+' });
-        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timings.WhiteScreen_2                                       [] goContext nogoContext RandVect(trial) 'ws' });
+        EP.AddPlanning({ 'WhiteScreen_1' NextOnset(EP) Timings.WhiteScreen_1                                         [] goContext nogoContext RandVect(trial) 'ws' });
+        EP.AddPlanning({ 'Cross'         NextOnset(EP) (Timings.Cross(1) + (Timings.Cross(2)-Timings.Cross(1))*rand) [] goContext nogoContext RandVect(trial) '+'  });
+        EP.AddPlanning({ 'WhiteScreen_2' NextOnset(EP) Timings.WhiteScreen_2                                         [] goContext nogoContext RandVect(trial) 'ws' });
         
     end % for
     
