@@ -1,6 +1,11 @@
 function [ TaskData ] = Task( DataStruct )
 
 try
+    %% Parallel port
+    
+    Common.PrepareParPort;
+    
+    
     %% Load and prepare all stimuli
     
     Session.LoadStimuli;
@@ -41,7 +46,7 @@ try
     secs = 0;
     once = 0;
     
-    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross(1));
+    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross);
     
     FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
     
@@ -67,9 +72,11 @@ try
                     case 'Instructions'
                         DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},...
                             'center','center',DataStruct.Parameters.Text.Color);
+                        pp = msg.Instructions;
                         
                     case 'FixationCross'
                         Common.DrawFixation;
+                        pp = msg.FixationCross;
                         
                     case 'Stimulus'
                         
@@ -93,19 +100,32 @@ try
                             
                         end % if
                         
+                        switch EP.Data{evt,7}
+                            case 0
+                                col = 5;
+                            case 1
+                                col = 6;
+                        end % switch
+                        
+                        pp = msg.Stimulus.(EP.Data{evt,col});
+                        
                     case 'WhiteScreen_1'
                         % do nothing
+                        pp = msg.WhiteScreen_1;
                         
                     case 'Cross'
                         Common.DrawFixation;
+                        pp = msg.BaseCross;
                         
                     case 'WhiteScreen_2'
                         % do nothing
+                        pp = msg.WhiteScreen_2;
                         
                 end % switch
                 
                 % Flip
                 event_onset = Screen('Flip',DataStruct.PTB.wPtr, StartTime + EP.Data{evt,2} - DataStruct.PTB.slack * 1 );
+                Common.SendParPortMessage;
                 
                 % Save onset
                 ER.AddEvent({ EP.Data{evt,1} event_onset-StartTime })
@@ -123,7 +143,7 @@ try
                             RR.AddEvent({'NoGo' event_onset-StartTime EP.Data{evt+4,2}-EP.Data{evt,2}});
                     end
                     
-                end
+                end % if
                 
                 while secs < StartTime + EP.Data{evt+1,2} - 0.002
                     
@@ -132,30 +152,35 @@ try
                     
                     RT = secs - last_stimulus_onset;
                     
-                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) && ~has_clicked
                         has_clicked = 1;
-                    end % if
-                    
-                    % Go and too late
-                    if EP.Data{evt,7} == 0 && RT > maxRT && ~has_clicked
-                        too_late = 1;
-                    end % if
-                    
-                    % NoGo and press button
-                    if EP.Data{evt,7} == 1 && has_clicked
-                        wrong_click = 1;
+                        
+                        if EP.Data{evt,7} == 0 && RT > maxRT % Go and too late
+                            too_late = 1;
+                            pp = msg.Click.too_late;
+                            
+                        elseif EP.Data{evt,7} == 1 % NoGo
+                            wrong_click = 1;
+                            pp = msg.Click.nogo;
+                            
+                        end % if
+                        
+                        Common.SendParPortMessage;
+                        
                     end % if
                     
                     if strcmp(EP.Data{evt,1},'Cross') && ( wrong_click || too_late )&& ~once
-                        
                         FixationCrossColor = DataStruct.Parameters.FixationCross.WrongColor;
                         Common.DrawFixation; % fixation cross changes color
                         event_onset = Screen('Flip',DataStruct.PTB.wPtr);
                         if wrong_click
+                            pp  = msg.WrongCross.nogo;
                             txt = 'Cross.wrong_click';
                         elseif too_late
+                            pp  = msg.WrongCross.too_late;
                             txt = 'Cross.too_late';
                         end
+                        Common.SendParPortMessage;
                         RR.AddEvent({ txt event_onset-StartTime 0});
                         once = 1;
                         
