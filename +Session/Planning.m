@@ -29,7 +29,7 @@ nGo   = 30; % number of go
 nNoGo = 15; % number of nogo
 
 List = {
-    %  Go        NoGo    nGo nNoGo
+     Go        NoGo    nGo nNoGo
     'neutral' 'negative' nGo nNoGo
     'neutral' 'positive' nGo nNoGo
     'circle'  'cross'    nGo nNoGo

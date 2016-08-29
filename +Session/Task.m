@@ -36,11 +36,12 @@ try
     Exit_flag = 0;
     wrong_click = 0;
     too_late = 0;
+    has_clicked = 0;
     last_stimulus_onset = [];
     secs = 0;
     once = 0;
     
-    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross) - 1;
+    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross(1));
     
     FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
     
@@ -75,6 +76,7 @@ try
                         wrong_click = 0;
                         once = 0;
                         too_late = 0;
+                        has_clicked = 0;
                         
                         FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
                         
@@ -130,13 +132,17 @@ try
                     
                     RT = secs - last_stimulus_onset;
                     
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
+                        has_clicked = 1;
+                    end % if
+                    
                     % Go and too late
-                    if EP.Data{evt,7} == 0 && RT > maxRT
+                    if EP.Data{evt,7} == 0 && RT > maxRT && ~has_clicked
                         too_late = 1;
                     end % if
                     
                     % NoGo and press button
-                    if EP.Data{evt,7} == 1 && keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
+                    if EP.Data{evt,7} == 1 && has_clicked
                         wrong_click = 1;
                     end % if
                     
