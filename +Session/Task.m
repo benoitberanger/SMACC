@@ -9,7 +9,7 @@ try
     %% Load and prepare all stimuli
     
     Session.LoadStimuli;
-    
+    TaskData.Stimuli = Stimuli;
     
     %% Tunning of the task
     
@@ -17,7 +17,13 @@ try
     
     % End of preparations
     EP.BuildGraph;
-    TaskData.EP = EP;
+    TaskData.EP           = EP;
+    TaskData.nGo          = nGo;
+    TaskData.nNoGo        = nNoGo;
+    TaskData.Paradigm     = Paradigm;
+    TaskData.Instructions = Instructions;
+    TaskData.Timings      = Timings;
+    TaskData.firstGO      = firstGO;
     
     
     %% Prepare event record and keybinf logger
