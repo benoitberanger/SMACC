@@ -58,7 +58,7 @@ try
     InstrFixCross_idx = Instructions_idx + FixationCross_idx;
     D = diff(InstrFixCross_idx);
     
-    blockstart_idx = find( D == -1 );
+    blockstart_idx = find( D == -1 ) + 1;
     
     EventData(blockstart_idx,end+1) = {1}; % diagnostic
     
@@ -69,25 +69,48 @@ try
         
         if b ~= length(blockstart_idx)
             
-            block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):blockstart_idx(b+1)-2,3) ) );
+            block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):blockstart_idx(b+1)-3,3) ) );
             
         else
             switch  EventData{end-1,1}
                 case 'Instructions'
-                    block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-3,3) ) );
+                    block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-2,3) ) );
                     
                 case 'FixationCross'
-                     block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-4,3) ) );
+                    block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-3,3) ) );
                     
                 otherwise
                     block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end,3) ) );
-
+                    
             end % switch
             
         end % if
         
     end % for
+
+    N = length(names);
     
+    % Build a condition name:
+    allBlocks = cell( size(DataStruct.TaskData.Paradigm,1) , 1 );
+    for ab = 1:size(DataStruct.TaskData.Paradigm,1)
+        allBlocks{ab} = [DataStruct.TaskData.Paradigm{ab,1} '.' DataStruct.TaskData.Paradigm{ab,2}];
+    end % for
+    
+    
+    % allBlocks = regexprep(allBlocks,'^.$','rest');
+    allBlocks(strcmp(allBlocks,'.'),:) = [];
+    
+    [blockNames,~,indC] = unique_stable( allBlocks );
+    names = [names ; blockNames]; % append conditions names
+    onsets{length(names)} = []; % pre-allocation
+    durations{length(names)} = []; % pre-allocation
+    
+    for c = 1 : size(block,1)
+        
+        onsets{N + indC(c)} = [onsets{N + indC(c)} ; block(c,1)];
+        durations{N + indC(c)} = [durations{N + indC(c)} ; block(c,2)];
+        
+    end % for
     
     
 catch err

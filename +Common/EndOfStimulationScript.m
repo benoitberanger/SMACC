@@ -133,22 +133,3 @@ switch DataStruct.ParPort
         
 end
 
-
-%% Diagnotic
-
-switch DataStruct.OperationMode
-    case 'Acquisition'
-        
-    case 'FastDebug'
-        plotDelay
-        RR.Plot
-        
-    case 'RealisticDebug'
-        plotDelay
-        RR.Plot
-        
-end
-
-disp(Table)
-
-

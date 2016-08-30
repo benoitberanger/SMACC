@@ -49,6 +49,8 @@ switch get(get(handles.uipanel_Environement,'SelectedObject'),'Tag')
         Environement = 'MRI';
     case 'radiobutton_Training'
         Environement = 'Training';
+    case 'radiobutton_EEG'
+        Environement = 'EEG';
     otherwise
         warning('SMACC:ModeSelection','Error in Environement selection')
 end
@@ -358,6 +360,24 @@ if strcmp(DataStruct.EyelinkMode,'On')
     end
     
 end
+
+
+%% Diagnotic
+
+switch DataStruct.OperationMode
+    case 'Acquisition'
+        
+    case 'FastDebug'
+        plotDelay
+        plotSPMnod
+        
+    case 'RealisticDebug'
+        plotDelay
+        plotSPMnod
+        
+end
+
+disp(DataStruct.TaskData.Table)
 
 
 %% Ready for another run
