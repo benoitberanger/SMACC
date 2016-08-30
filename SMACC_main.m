@@ -321,7 +321,7 @@ end
 
 %% Reaction time & stats
 
-Stats = table2stats(DataStruct.TaskData.Table);
+[ DataStruct.Stats, DataStruct.newTable, DataStruct.newTable_hdr ] = table2stats(DataStruct.TaskData.Table);
 
 
 %% Saving data strucure

@@ -1,8 +1,9 @@
-function [ Stats ] = table2stats( Table )
-%%
+function [ Stats, newTable, newTable_hdr ] = table2stats( Table )
+
 Stats = struct;
 
-% Build condition name
+
+%% Build condition name
 
 allBlocks = cell( size(Table,1) , 1 );
 for ab = 1:size(Table,1)
@@ -10,7 +11,7 @@ for ab = 1:size(Table,1)
 end % for
 
 
-% Regoup each condition
+%% Regoup each condition
 
 [blockNames,~,indC] = unique_stable( allBlocks );
 
@@ -47,5 +48,38 @@ for c = 1:length(blockNames)
 end % for
 
 
-end % function
+%% Combine stats
 
+fields = {'OkGo', 'ErrorNG', 'TooLate', 'Miss'};
+
+newTable_hdr = {'block', 'OkGo:count', 'OkGo:mean', 'ErrorNG:count', 'ErrorNG:mean', 'TooLate:count', 'TooLate:mean', 'Miss:count'};
+newTable = cell(0);
+
+for c = 1:length(blockNames)
+    
+    newTable{c,1} = blockNames{c};
+    
+    for f = 1:length(fields)
+        
+        if strcmp(fields{f},'Miss')
+            newTable{c,2*f} = Stats.(blockNames{c}).(fields{f}).count;
+        else
+            newTable{c,2*f} = Stats.(blockNames{c}).(fields{f}).count;
+            newTable{c,2*f+1} = Stats.(blockNames{c}).(fields{f}).mean;
+        end % if
+        
+    end % for
+    
+end % for
+
+
+%% Display
+
+fprintf('\n')
+fprintf('\n')
+dsp = [ newTable_hdr ; newTable];
+disp(dsp)
+fprintf('\n')
+
+
+end % function
