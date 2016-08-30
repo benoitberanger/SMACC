@@ -141,9 +141,11 @@ switch DataStruct.OperationMode
         
     case 'FastDebug'
         plotDelay
+        RR.Plot
         
     case 'RealisticDebug'
         plotDelay
+        RR.Plot
         
 end
 

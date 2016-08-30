@@ -89,7 +89,7 @@ try
                         has_clicked = 0;
                         too_late_click = 0;
                         good_click = 0;
-                        finalRT = 0;
+                        finalRT = [];
                         
                         FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
                         
@@ -197,7 +197,7 @@ try
                             txt = 'Cross.too_late';
                         end
                         Common.SendParPortMessage;
-                        RR.AddEvent({ txt event_onset-StartTime 0});
+                        RR.AddEvent({ txt event_onset-StartTime EP.Data{evt+1,2}-(event_onset-StartTime)});
                         once = 1;
                         
                     end % if
