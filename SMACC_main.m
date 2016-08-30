@@ -319,6 +319,11 @@ end
 [ names , onsets , durations ] = SPMnod( DataStruct ); %#ok<*NASGU,*ASGLU>
 
 
+%% Reaction time & stats
+
+Stats = table2stats(DataStruct.TaskData.Table);
+
+
 %% Saving data strucure
 
 if strcmp(SaveMode,'SaveData') && strcmp(OperationMode,'Acquisition')
@@ -376,8 +381,6 @@ switch DataStruct.OperationMode
         plotSPMnod
         
 end
-
-disp(DataStruct.TaskData.Table)
 
 
 %% Ready for another run
