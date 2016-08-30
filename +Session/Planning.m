@@ -60,6 +60,18 @@ switch DataStruct.Environement
             'cross'   'null'     nGo nNoGo 'circle'  'null'     nGo nNoGo % bloc1 (from 1 to 4) or bloc2 (from 5 to 8)
             };
         
+        %         % All possible blocks here :
+        %         fixList = {
+        %             %Go        NoGo      nGo nNoGo
+        %             'negative' 'positive' nGo nNoGo
+        %             'positive' 'negative' nGo nNoGo
+        %             'positive' 'null'     nGo nNoGo
+        %             'negative' 'null'     nGo nNoGo
+        %
+        %             };
+        %         randList = {
+        %             };
+        
     case 'EEG'
         
         nList = 7;
@@ -112,13 +124,18 @@ end % for
 % via strings. The 'keys' (strings) are the different contexts.
 
 %            Go      NoGo        Instructions
-Instructions.neutral.negative = 'Go=neutral NoGo=negative';
-Instructions.neutral.positive = 'Go=neutral NoGo=positive';
-Instructions.neutral.null     = 'Go=neutral';
-Instructions.circle .cross    = 'Go=circle NoGo=cross';
-Instructions.cross  .circle   = 'Go=cross NoGo=circle';
-Instructions.cross  .null     = 'Go=cross';
-Instructions.circle .null     = 'Go=circle';
+Instructions.neutral.negative  = 'Go=neutral NoGo=negative';
+Instructions.neutral.positive  = 'Go=neutral NoGo=positive';
+Instructions.neutral.null      = 'Go=neutral';
+Instructions.circle .cross     = 'Go=circle NoGo=cross';
+Instructions.cross  .circle    = 'Go=cross NoGo=circle';
+Instructions.cross  .null      = 'Go=cross';
+Instructions.circle .null      = 'Go=circle';
+
+Instructions.negative.positive = 'Go=negative NoGo=positive';
+Instructions.positive.negative = 'Go=positive NoGo=negative';
+Instructions.positive.null     = 'Go=positive';
+Instructions.negative.null     = 'Go=negative';
 
 
 %% Timings
@@ -223,14 +240,14 @@ for p = 1 : size(Paradigm,1)
                 nogoImg.list_idx_shuffled = Shuffle( 1:nogoImg.list_size );       % shuffle all the files
                 nogoImg.sequence_idx      = nogoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
                 nogoImg.sequence          = nogoImg.list( nogoImg.sequence_idx ); % take out some random files (names)
-
+                
             end % if
             
         end % if
         
         if strcmp(nogoContext,'null')
-                % Control blocks only have Go conditions
-                RandVect = zeros(1, nGo + nNoGo );
+            % Control blocks only have Go conditions
+            RandVect = zeros(1, nGo + nNoGo );
         end % if
         
         

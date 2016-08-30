@@ -776,6 +776,17 @@ if isempty(figPtr) % Create the figure
     
     figPtr = figHandle;
     
+    
+    %% Button response recall
+    
+    fprintf('\n')
+    fprintf('Response buttuns (fORRP 932) : \n')
+    fprintf('USB \n')
+    fprintf('HHSC - 1x2 - CYL \n')
+    fprintf('HID NAR BYGRT \n')
+    fprintf('\n')
+    
+    
 else % Figure exists so brings it to the focus
     
     figure(figPtr);
