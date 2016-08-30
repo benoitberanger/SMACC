@@ -114,11 +114,11 @@ end % for
 %            Go      NoGo        Instructions
 Instructions.neutral.negative = 'Go=neutral NoGo=negative';
 Instructions.neutral.positive = 'Go=neutral NoGo=positive';
-Instructions.neutral.null     = 'Go=neutral NoGo=null';
+Instructions.neutral.null     = 'Go=neutral';
 Instructions.circle .cross    = 'Go=circle NoGo=cross';
 Instructions.cross  .circle   = 'Go=cross NoGo=circle';
-Instructions.cross  .null     = 'Go=cross NoGo=null';
-Instructions.circle .null     = 'Go=circle NoGo=null';
+Instructions.cross  .null     = 'Go=cross';
+Instructions.circle .null     = 'Go=circle';
 
 
 %% Timings
@@ -223,14 +223,14 @@ for p = 1 : size(Paradigm,1)
                 nogoImg.list_idx_shuffled = Shuffle( 1:nogoImg.list_size );       % shuffle all the files
                 nogoImg.sequence_idx      = nogoImg.list_idx_shuffled( 1:nNoGo ); % take out some random files (index)
                 nogoImg.sequence          = nogoImg.list( nogoImg.sequence_idx ); % take out some random files (names)
-                
-            else
-                
-                % Control blocks only have Go conditions
-                RandVect = zeros(1, nGo + nNoGo );
-                
+
             end % if
             
+        end % if
+        
+        if strcmp(nogoContext,'null')
+                % Control blocks only have Go conditions
+                RandVect = zeros(1, nGo + nNoGo );
         end % if
         
         

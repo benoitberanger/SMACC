@@ -40,13 +40,16 @@ try
     event_onset = 0;
     Exit_flag = 0;
     wrong_click = 0;
+    too_late_click = 0;
     too_late = 0;
     has_clicked = 0;
     last_stimulus_onset = [];
     secs = 0;
     once = 0;
+    stimulus_counter = 0;
+    good_click = 0;
     
-    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + mean(Timings.Cross);
+    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
     
     FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
     
@@ -84,6 +87,9 @@ try
                         once = 0;
                         too_late = 0;
                         has_clicked = 0;
+                        too_late_click = 0;
+                        good_click = 0;
+                        finalRT = 0;
                         
                         FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
                         
@@ -154,19 +160,29 @@ try
                     
                     if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) && ~has_clicked
                         has_clicked = 1;
+                        good_click = 1;
+                        pp = msg.Click.ok;
+                        finalRT = RT;
                         
                         if EP.Data{evt,7} == 0 && RT > maxRT % Go and too late
-                            too_late = 1;
+                            too_late_click = 1;
+                            good_click = 0;
                             pp = msg.Click.too_late;
                             
                         elseif EP.Data{evt,7} == 1 % NoGo
                             wrong_click = 1;
+                            good_click = 0;
                             pp = msg.Click.nogo;
                             
                         end % if
                         
                         Common.SendParPortMessage;
                         
+                    end % if
+                    
+                    if EP.Data{evt,7} == 0 && RT > maxRT && ~has_clicked % Go and too late
+                            too_late = 1;
+                            finalRT = [];
                     end % if
                     
                     if strcmp(EP.Data{evt,1},'Cross') && ( wrong_click || too_late )&& ~once
@@ -191,6 +207,22 @@ try
                 FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
                 
         end % switch
+        
+        if strcmp(EP.Data{evt,1},'WhiteScreen_2')
+            
+            stimulus_counter = stimulus_counter +1 ;
+            Table(stimulus_counter,:) = {...
+                last_stimulus_onset-StartTime...
+                EP.Data{evt,7}...
+                EP.Data{evt,5}...
+                EP.Data{evt,6}...
+                finalRT...
+                has_clicked...
+                good_click...
+                too_late_click...
+                wrong_click}; %#ok<AGROW>
+            
+        end % if
         
         if Exit_flag
             break %#ok<*UNRCH>

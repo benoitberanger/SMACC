@@ -52,7 +52,7 @@ for side = 1:length(Sides)
         click_idx = cell2mat(KL.KbEvents{click_spot.(Sides{side}),2}(:,2)) == 1;
         click_idx = find(click_idx);
         % the last click can be be unfinished : button down + end of stim = no button up
-        if isempty(KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),3})
+        if size(KL.KbEvents{click_spot.(Sides{side}),2},2) == 2
             KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),3} =  ER.Data{end,2} - KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),1};
         end% if
         click_onsets    = cell2mat(KL.KbEvents{click_spot.(Sides{side}),2}(click_idx,1));
@@ -83,12 +83,30 @@ TaskData.StartTime = StartTime;
 TaskData.StopTime  = StopTime;
 
 
+% RT table
+empty_idx = cellfun( @isempty , Table(:,1) );
+Table( empty_idx , : ) = [];
+
+% In cas I've messed with the code, let's check the coherence.
+for t = 1 : size(Table,1)
+    state = sum( cell2mat( Table(t,7:9) ) ) == Table{t,6};
+    if ~state
+        warning('Table:ColumnsNotCoherent','Table(%d,:) not coherent',t)
+    end % if
+end % for
+
+TaskData.Table_hdr = Table_hdr;
+TaskData.Table     = Table;
+
+
 %% Send infos to base workspace
 
 assignin('base','EP',EP)
 assignin('base','ER',ER)
 assignin('base','RR',RR)
 assignin('base','KL',KL)
+
+assignin('base','Table',Table)
 
 assignin('base','TaskData',TaskData)
 
@@ -128,3 +146,7 @@ switch DataStruct.OperationMode
         plotDelay
         
 end
+
+disp(Table)
+
+

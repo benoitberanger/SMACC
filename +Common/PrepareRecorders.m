@@ -26,3 +26,11 @@ KL = KbLogger( allKeys , KbName(allKeys) );
 
 % Start recording events
 KL.Start;
+
+
+%% Prepare a cell to store reaction time
+
+Table_hdr = {'stimulus onset (s)' , 'Go=0/NoGo=1' , 'goContext' , 'nogoContext' , 'reaction time (s)' , 'has clicked' , 'good click' , 'too late click' , 'nogo click' };
+
+Table = cell(size(Paradigm,1)*(nGo+nNoGo),length(Table_hdr));
+
