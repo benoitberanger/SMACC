@@ -1,4 +1,4 @@
-# NBI
+# SMACC
 
 fMRI project @ CENIR-ICM, Paris
 
