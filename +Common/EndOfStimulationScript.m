@@ -52,7 +52,7 @@ for side = 1:length(Sides)
         click_idx = cell2mat(KL.KbEvents{click_spot.(Sides{side}),2}(:,2)) == 1;
         click_idx = find(click_idx);
         % the last click can be be unfinished : button down + end of stim = no button up
-        if size(KL.KbEvents{click_spot.(Sides{side}),2},2) == 2
+        if isempty(KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),3})
             KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),3} =  ER.Data{end,2} - KL.KbEvents{click_spot.(Sides{side}),2}{click_idx(end),1};
         end% if
         click_onsets    = cell2mat(KL.KbEvents{click_spot.(Sides{side}),2}(click_idx,1));
