@@ -159,8 +159,35 @@ try
                 
                 while secs < StartTime + EP.Data{evt+1,2} - 0.002
                     
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    % in R2016a, BREAK in loop in a script (wrapper) is not
+                    % allowed
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     % ESCAPE key pressed ?
-                    Common.Interrupt;
+                    % Common.Interrupt; 
+                    
+                    % Escape ?
+                    [ ~ , secs , keyCode ] = KbCheck;
+                    
+                    if keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
+                        
+                        % Flag
+                        Exit_flag = 1;
+                        
+                        % Stop time
+                        StopTime = GetSecs;
+                        
+                        % Record StopTime
+                        ER.AddStopTime( 'StopTime' , StopTime - StartTime );
+                        RR.AddEvent( { 'StopTime' , StopTime - StartTime , 0 } );
+                        
+                        ShowCursor;
+                        Priority( DataStruct.PTB.oldLevel );
+                        
+                        break
+                        
+                    end
+                    
                     
                     RT = secs - last_stimulus_onset;
                     
