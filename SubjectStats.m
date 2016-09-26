@@ -1,7 +1,5 @@
 function [] = SubjectStats(hObject,eventdata)
 
-clc
-
 % ../
 upperDir = fullfile( fileparts( pwd ) );
 
@@ -53,18 +51,44 @@ listConditions = {
     'circle_null'
     'cross_null'
     };
-
+allMeans = nan(size(listConditions,1),7);
 sortedTable = cell(0,8);
 
 for s = 1 : length(listConditions)
     idx = strcmp(fullTable(:,1),listConditions{s});
     sortedTable = [sortedTable ; fullTable(idx,:)];
     if any(idx)
-        sortedTable = [sortedTable ; ['mean'  num2cell(nanmean(cell2mat(fullTable(idx,2:end)),1))]];
+        localmean = nanmean(cell2mat(fullTable(idx,2:end)),1);
+        sortedTable = [sortedTable ; ['mean' num2cell(localmean) ]];
+        allMeans(s,:) = localmean;
     end % if
 end % for
 
 fprintf('\n')
 disp([ newTable_hdr ; sortedTable])
+
+% count
+figure( ...
+    'Name'        , 'count'                   , ...
+    'NumberTitle' , 'off'                       , ...
+    'Units'       , 'Normalized'                , ...
+    'Position'    , [0.01, 0.01, 0.98, 0.88]      ...
+    )
+bar(allMeans(:,[1 3 5 7]))
+set(gca,'XTickLabel',listConditions)
+legend(newTable_hdr(1+[1 3 5 7]))
+grid on
+
+% mean
+figure( ...
+    'Name'        , 'mean'                   , ...
+    'NumberTitle' , 'off'                       , ...
+    'Units'       , 'Normalized'                , ...
+    'Position'    , [0.01, 0.01, 0.98, 0.88]      ...
+    )
+bar(allMeans(:,[2 4 6]))
+set(gca,'XTickLabel',listConditions)
+legend(newTable_hdr(1+[2 4 6]))
+grid on
 
 end % function
