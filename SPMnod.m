@@ -15,7 +15,7 @@ try
         case 'EyelinkCalibration'
             names = {'EyelinkCalibration'};
             
-        case 'Session'
+        otherwise
             
             names = {
                 'Go'

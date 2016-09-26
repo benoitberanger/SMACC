@@ -7,7 +7,7 @@ function [ EP , nGo , nNoGo , Paradigm , Instructions , Timings , firstGO ] = Pl
 % Execution of the function without parameter : for display
 if nargout < 1
     
-    DataStruct.Environement  = 'MRI';
+    DataStruct.Task  = 'MRI';
     DataStruct.OperationMode = 'Acquistion';
     
     osef = struct;
@@ -29,10 +29,11 @@ nGo   = 30; % number of go
 nNoGo = 15; % number of nogo
 
 % Number of shuffled list we will play
-switch DataStruct.Environement
+switch DataStruct.Task
     case 'Training'
         
         nList = 1;
+        needRandomization = 1;
         
         % All possible blocks here :
         fixList = {
@@ -47,6 +48,7 @@ switch DataStruct.Environement
     case 'MRI'
         
         nList = 1;
+        needRandomization = 1;
         
         % All possible blocks here :
         fixList = {
@@ -60,6 +62,7 @@ switch DataStruct.Environement
             'cross'   'null'     nGo nNoGo 'circle'  'null'     nGo nNoGo % bloc1 (from 1 to 4) or bloc2 (from 5 to 8)
             };
         
+        %         % PILOTE 3 du 30_aug_2016
         %         % All possible blocks here :
         %         fixList = {
         %             %Go        NoGo      nGo nNoGo
@@ -75,6 +78,7 @@ switch DataStruct.Environement
     case 'EEG'
         
         nList = 7;
+        needRandomization = 1;
         
         % All possible blocks here :
         fixList = {
@@ -86,9 +90,48 @@ switch DataStruct.Environement
             'circle'  'cross'    nGo nNoGo 'cross'   'circle'   nGo nNoGo % bloc1 (from 1 to 4) or bloc2 (from 5 to 8)
             };
         
+    case 'CalibrationXO'
+        
+        nList = 1;
+        needRandomization = 0;
+        
+        % All possible blocks here :
+        fixList = {
+            %Go        NoGo      nGo nNoGo maxRT
+            'circle'  'cross'    nGo nNoGo 0.350
+            'cross'   'circle'   nGo nNoGo 0.300
+            'circle'  'cross'    nGo nNoGo 0.250
+            'cross'   'circle'   nGo nNoGo 0.200
+            };
+        
+        randList = {
+            };
+        
+    case 'CalibrationFaces'
+        
+        nList = 1;
+        needRandomization = 0;
+        
+        % All possible blocks here :
+        fixList = {
+            %Go        NoGo      nGo nNoGo maxRT
+            'neutral' 'positive' nGo nNoGo 0.400
+            'neutral' 'negative' nGo nNoGo 0.400
+            'neutral' 'positive' nGo nNoGo 0.350
+            'neutral' 'negative' nGo nNoGo 0.350
+            'neutral' 'positive' nGo nNoGo 0.300
+            'neutral' 'negative' nGo nNoGo 0.300
+            'neutral' 'positive' nGo nNoGo 0.250
+            'neutral' 'negative' nGo nNoGo 0.250
+            };
+        
+        randList = {
+            };
+        
 end % switch
 
-% Fill the Paradigm with shuffled lists
+
+%% Fill the Paradigm with shuffled lists
 Paradigm = {}; % initilize
 for l = 1 : nList
     
@@ -103,10 +146,14 @@ for l = 1 : nList
         end % switch
     end % if
     
-    conditionOrder = Shuffle(1:size(tmpList,1)); % shuffle the order
-    shuffledList   = tmpList(conditionOrder,:);  % Creat a list with this randomized order
+    if needRandomization
+        conditionOrder = Shuffle(1:size(tmpList,1)); % shuffle the order
+        shuffledList   = tmpList(conditionOrder,:);  % Creat a list with this randomized order
+    else
+        shuffledList = tmpList;
+    end
     
-    if ~isempty(Paradigm) % µDon't add the 30s cross for the first
+    if ~isempty(Paradigm) % Don't add the 30s cross for the first
         switch DataStruct.Environement
             case 'EEG'
                 Paradigm = [Paradigm ; {[] [] [] []}];%#ok<*AGROW>
@@ -320,6 +367,8 @@ EP.AddPlanning({ 'StopTime' NextOnset(EP) 0 [] [] [] [] [] });
 % without output argument
 
 if nargout < 1
+    
+    disp(Paradigm)
     
     fprintf( '\n' )
     fprintf(' \n Total stim duration : %g seconds \n' , NextOnset(EP) )

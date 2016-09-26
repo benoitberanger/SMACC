@@ -19,8 +19,9 @@ clc
 sca
 
 % Initialize the main structure
-DataStruct           = struct;
-DataStruct.TimeStamp = datestr(now, 'yyyy-mm-dd HH:MM');
+DataStruct               = struct;
+DataStruct.TimeStamp     = datestr(now, 'yyyy-mm-dd HH:MM'); % readable
+DataStruct.TimeStampFile = datestr(now, 30); % to sort automatically by time of creation
 
 
 %% Task selection
@@ -30,8 +31,28 @@ switch get(hObject,'Tag')
     case 'pushbutton_EyelinkCalibration'
         Task = 'EyelinkCalibration';
         
-    case 'pushbutton_Session'
-        Task                     = 'Session';
+    case 'pushbutton_MRI'
+        Task                     = 'MRI';
+        SessionNumber            = str2double( get(handles.edit_SessionNumber,'String') );
+        DataStruct.SessionNumber = SessionNumber;
+        
+    case 'pushbutton_EEG'
+        Task                     = 'EEG';
+        SessionNumber            = str2double( get(handles.edit_SessionNumber,'String') );
+        DataStruct.SessionNumber = SessionNumber;
+        
+    case 'pushbutton_Training'
+        Task                     = 'Training';
+        SessionNumber            = str2double( get(handles.edit_SessionNumber,'String') );
+        DataStruct.SessionNumber = SessionNumber;
+        
+    case 'pushbutton_CalibrationXO'
+        Task                     = 'CalibrationXO';
+        SessionNumber            = str2double( get(handles.edit_SessionNumber,'String') );
+        DataStruct.SessionNumber = SessionNumber;
+        
+    case 'pushbutton_CalibrationFaces'
+        Task                     = 'CalibrationFaces';
         SessionNumber            = str2double( get(handles.edit_SessionNumber,'String') );
         DataStruct.SessionNumber = SessionNumber;
         
@@ -44,18 +65,18 @@ DataStruct.Task = Task;
 
 %% Environement selection
 
-switch get(get(handles.uipanel_Environement,'SelectedObject'),'Tag')
-    case 'radiobutton_MRI'
-        Environement = 'MRI';
-    case 'radiobutton_Training'
-        Environement = 'Training';
-    case 'radiobutton_EEG'
-        Environement = 'EEG';
-    otherwise
-        warning('SMACC:ModeSelection','Error in Environement selection')
-end
-
-DataStruct.Environement = Environement;
+% switch get(get(handles.uipanel_Environement,'SelectedObject'),'Tag')
+%     case 'radiobutton_MRI'
+%         Environement = 'MRI';
+%     case 'radiobutton_Training'
+%         Environement = 'Training';
+%     case 'radiobutton_EEG'
+%         Environement = 'EEG';
+%     otherwise
+%         warning('SMACC:ModeSelection','Error in Environement selection')
+% end
+% 
+% DataStruct.Environement = Environement;
 
 
 %% Save mode selection
@@ -90,16 +111,16 @@ DataStruct.OperationMode = OperationMode;
 
 %% Record video ?
 
-switch get(get(handles.uipanel_RecordVideo,'SelectedObject'),'Tag')
-    case 'radiobutton_RecordOn'
-        RecordVideo          = 'On';
-        VideoName            = [ get(handles.edit_RecordName,'String') '.mov'];
-        DataStruct.VideoName = VideoName;
-    case 'radiobutton_RecordOff'
-        RecordVideo          = 'Off';
-    otherwise
-        warning('SMACC:RecordVideo','Error in Record Video')
-end
+% switch get(get(handles.uipanel_RecordVideo,'SelectedObject'),'Tag')
+%     case 'radiobutton_RecordOn'
+%         RecordVideo          = 'On';
+%         VideoName            = [ get(handles.edit_RecordName,'String') '.mov'];
+%         DataStruct.VideoName = VideoName;
+%     case 'radiobutton_RecordOff'
+RecordVideo          = 'Off';
+%     otherwise
+%         warning('SMACC:RecordVideo','Error in Record Video')
+% end
 
 DataStruct.RecordVideo = RecordVideo;
 
@@ -114,12 +135,7 @@ end
 
 % Prepare path
 DataPath = [fileparts(pwd) filesep 'data' filesep SubjectID filesep];
-switch Task
-    case 'Session'
-        DataPathNoRun = sprintf('%s_%s_S%d_%s_', SubjectID, Task, SessionNumber, Environement);
-    otherwise
-        DataPathNoRun = sprintf('%s_%s_%s_', SubjectID, Task, Environement);
-end
+DataPathNoRun = sprintf('%s_%s_S%d_', SubjectID, Task, SessionNumber);
 
 % Fetch content of the directory
 dirContent = dir(DataPath);
@@ -143,12 +159,7 @@ end
 
 RunNumber = num2str(LastRunNumber + 1);
 
-switch Task
-    case 'Session'
-        DataFile = sprintf('%s%s_%s_S%d_%s_%s', DataPath, SubjectID, Task, SessionNumber, Environement, RunNumber );
-    otherwise
-        DataFile = sprintf('%s%s_%s_%s_%s', DataPath, SubjectID, Task, Environement, RunNumber );
-end
+DataFile = sprintf('%s%s_%s_%s_S%d_%s', DataPath, DataStruct.TimeStampFile, SubjectID, Task, SessionNumber, RunNumber );
 
 DataStruct.SubjectID = SubjectID;
 DataStruct.RunNumber = RunNumber;
@@ -217,15 +228,15 @@ switch get(get(handles.uipanel_EyelinkMode,'SelectedObject'),'Tag')
         Eyelink.IsConnected
         
         % File name for the eyelink : 8 char maximum
-        switch Task
-            case 'EyelinkCalibration'
-                task = 'EC';
-            case 'Session'
-                task = ['S' get(handles.edit_IlluBlock,'String')];
-            otherwise
-                error('SMACC:Task','Task ?')
-        end
-        EyelinkFile = [ SubjectID task sprintf('%.2d',str2double(RunNumber)) ];
+        %         switch Task
+        %             case 'EyelinkCalibration'
+        %                 task = 'EC';
+        %             case 'Session'
+        %                 task = ['S' get(handles.edit_IlluBlock,'String')];
+        %             otherwise
+        %                 error('SMACC:Task','Task ?')
+        %         end
+        %         EyelinkFile = [ SubjectID task sprintf('%.2d',str2double(RunNumber)) ];
         
         DataStruct.EyelinkFile = EyelinkFile;
         
@@ -283,12 +294,13 @@ DataStruct.PTB = StartPTB( DataStruct );
 
 %% Task run
 
-if strcmp(Task,'EyelinkCalibration')
-    Eyelink.Calibration( DataStruct.PTB.wPtr );
-    TaskData.ER.Data = {};
-    TaskData.IsEyelinkRreadyToRecord = 1;
-else
-    TaskData = Session.Task( DataStruct );
+switch Task
+    case 'EyelinkCalibration'
+        Eyelink.Calibration( DataStruct.PTB.wPtr );
+        TaskData.ER.Data = {};
+        TaskData.IsEyelinkRreadyToRecord = 1;
+    otherwise
+        TaskData = GoNogo.Task( DataStruct ); % all 'Task' converge to one pipeline
 end
 
 DataStruct.TaskData = TaskData;

@@ -8,12 +8,12 @@ try
     
     %% Load and prepare all stimuli
     
-    Session.LoadStimuli;
+    GoNogo.LoadStimuli;
     TaskData.Stimuli = Stimuli;
     
     %% Tunning of the task
     
-    [ EP , nGo , nNoGo , Paradigm , Instructions , Timings , firstGO ] = Session.Planning( DataStruct , Stimuli ); %#ok<*ASGLU>
+    [ EP , nGo , nNoGo , Paradigm , Instructions , Timings , firstGO ] = GoNogo.Planning( DataStruct , Stimuli ); %#ok<*ASGLU>
     
     % End of preparations
     EP.BuildGraph;
@@ -54,8 +54,7 @@ try
     once = 0;
     stimulus_counter = 0;
     good_click = 0;
-    
-    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
+    block_counter = 0;
     
     FixationCrossColor = DataStruct.Parameters.FixationCross.BaseColor;
     
@@ -82,6 +81,13 @@ try
                         DrawFormattedText(DataStruct.PTB.wPtr, EP.Data{evt,4},...
                             'center','center',DataStruct.Parameters.Text.Color);
                         pp = msg.Instructions;
+                        block_counter = block_counter +1 ;
+                        
+                        if size(Paradigm,2) == 5
+                            maxRT = Paradigm{block_counter,5};
+                        else
+                            maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
+                        end
                         
                     case 'FixationCross'
                         Common.DrawFixation;

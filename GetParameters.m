@@ -27,15 +27,7 @@ Parameters.Video.SubjectDistance = 0.120; % m
 Parameters.Video.ScreenWidthM    = 0.040; % m
 Parameters.Video.ScreenHeightM   = 0.030; % m
 
-switch DataStruct.Task
-    
-    case 'Session'
-        Parameters.Video.ScreenBackgroundColor = [255 255 255]; % [R G B] ( from 0 to 255 )
-        
-    case 'EyelinkCalibration'
-        Parameters.Video.ScreenBackgroundColor = [128 128 128]; % [R G B] ( from 0 to 255 )
-        
-end
+Parameters.Video.ScreenBackgroundColor = [255 255 255]; % [R G B] ( from 0 to 255 )
 
 
 %%%%%%%%%%%%
