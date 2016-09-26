@@ -171,16 +171,16 @@ end % for
 % via strings. The 'keys' (strings) are the different contexts.
 
 %            Go      NoGo        Instructions
-Instructions.neutral.negative  = 'Go=neutral NoGo=negative';
-Instructions.neutral.positive  = 'Go=neutral NoGo=positive';
+Instructions.neutral.negative  = 'Go=neutral \nNoGo=negative';
+Instructions.neutral.positive  = 'Go=neutral \nNoGo=positive';
 Instructions.neutral.null      = 'Go=neutral';
-Instructions.circle .cross     = 'Go=circle NoGo=cross';
-Instructions.cross  .circle    = 'Go=cross NoGo=circle';
+Instructions.circle .cross     = 'Go=circle \nNoGo=cross';
+Instructions.cross  .circle    = 'Go=cross \nNoGo=circle';
 Instructions.cross  .null      = 'Go=cross';
 Instructions.circle .null      = 'Go=circle';
 
-Instructions.negative.positive = 'Go=negative NoGo=positive';
-Instructions.positive.negative = 'Go=positive NoGo=negative';
+Instructions.negative.positive = 'Go=negative \nNoGo=positive';
+Instructions.positive.negative = 'Go=positive \nNoGo=negative';
 Instructions.positive.null     = 'Go=positive';
 Instructions.negative.null     = 'Go=negative';
 

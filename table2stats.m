@@ -1,4 +1,8 @@
-function [ Stats, newTable, newTable_hdr ] = table2stats( Table )
+function [ Stats, newTable, newTable_hdr ] = table2stats( Table, display )
+
+if nargin<2
+    display = 1;
+end
 
 Stats = struct;
 
@@ -75,11 +79,12 @@ end % for
 
 %% Display
 
-fprintf('\n')
-fprintf('\n')
-dsp = [ newTable_hdr ; newTable];
-disp(dsp)
-fprintf('\n')
-
+if display
+    fprintf('\n')
+    fprintf('\n')
+    dsp = [ newTable_hdr ; newTable];
+    disp(dsp)
+    fprintf('\n')
+end
 
 end % function

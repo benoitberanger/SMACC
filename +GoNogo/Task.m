@@ -61,8 +61,6 @@ try
     % Loop over the EventPlanning
     for evt = 1 : size( EP.Data , 1 )
         
-        Common.CommandWindowDisplay;
-        
         switch EP.Data{evt,1}
             
             case 'StartTime'
@@ -88,6 +86,8 @@ try
                         else
                             maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
                         end
+                        
+                        Common.CommandWindowDisplay;
                         
                     case 'FixationCross'
                         Common.DrawFixation;
@@ -170,7 +170,7 @@ try
                     % allowed
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     % ESCAPE key pressed ?
-                    % Common.Interrupt; 
+                    % Common.Interrupt;
                     
                     % Escape ?
                     [ ~ , secs , keyCode ] = KbCheck;
@@ -220,8 +220,8 @@ try
                     end % if
                     
                     if EP.Data{evt,7} == 0 && RT > maxRT && ~has_clicked % Go and too late
-                            too_late = 1;
-                            finalRT = [];
+                        too_late = 1;
+                        finalRT = [];
                     end % if
                     
                     if strcmp(EP.Data{evt,1},'Cross') && ( wrong_click || too_late )&& ~once
@@ -260,6 +260,8 @@ try
                 good_click...
                 too_late_click...
                 wrong_click}; %#ok<AGROW>
+            
+            disp(Table(stimulus_counter,:))
             
         end % if
         
