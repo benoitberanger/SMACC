@@ -29,7 +29,9 @@ dirContentSorted = dirContent(:,IX);
 % Display dir
 fprintf('\n\n SubjectID data dir : %s \n', SubjectIDDir)
 
-% Display content
+
+%% Display in order of occurrence
+
 fullTable = cell(0,8);
 for f = 1 : size(dirContentSorted,2)
     if regexp(dirContentSorted{1,f},[ SubjectID '_.*\d+.mat$'])
@@ -41,6 +43,9 @@ for f = 1 : size(dirContentSorted,2)
 end % for
 
 disp([ newTable_hdr ; fullTable])
+
+
+%% Display regrouped by conditions
 
 listConditions = {
     'neutral_positive'
@@ -67,7 +72,10 @@ end % for
 fprintf('\n')
 disp([ newTable_hdr ; sortedTable])
 
-% count
+
+%% Plot
+
+% Count
 figure( ...
     'Name'        , 'count'                   , ...
     'NumberTitle' , 'off'                       , ...
@@ -79,7 +87,7 @@ set(gca,'XTickLabel',listConditions)
 legend(newTable_hdr(1+[1 3 5 7]))
 grid on
 
-% mean
+% Mean
 figure( ...
     'Name'        , 'mean'                   , ...
     'NumberTitle' , 'off'                       , ...

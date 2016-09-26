@@ -38,7 +38,7 @@ if isempty(figPtr) % Create the figure
     panelProp.wP    = 1 - panelProp.xposP * 2;
     
     panelProp.vect  = ...
-        [1 3 2 1 2]; % relative proportions of each panel, from bottom to top
+        [1 3 2 1 1.5 2]; % relative proportions of each panel, from bottom to top
     
     panelProp.vectLength    = length(panelProp.vect);
     panelProp.vectTotal     = sum(panelProp.vect);
@@ -169,6 +169,125 @@ if isempty(figPtr) % Create the figure
         'String','',...
         'BackgroundColor',figureBGcolor,...
         'Visible','Off');
+    
+    
+    %% Panel : RT
+    
+    p_rt.x = panelProp.xposP;
+    p_rt.w = panelProp.wP;
+    
+    panelProp.countP = panelProp.countP - 1;
+    p_rt.y = panelProp.yposP(panelProp.countP);
+    p_rt.h = panelProp.unitWidth*panelProp.vect(panelProp.countP);
+    
+    handles.uipanel_RT = uibuttongroup(handles.(mfilename),...
+        'Title','RT',...
+        'Units', 'Normalized',...
+        'Position',[p_rt.x p_rt.y p_rt.w p_rt.h],...
+        'BackgroundColor',figureBGcolor);
+    
+    p_rt.nbO    = 3; % Number of objects
+    p_rt.Ow     = 1/(p_rt.nbO + 1); % Object width
+    p_rt.countO = 0; % Object counter
+    p_rt.xposO  = @(countO) p_rt.Ow/(p_rt.nbO+1)*countO + (countO-1)*p_rt.Ow;
+    
+    p_rt.yposOmain = 0.1;
+    p_rt.hOmain    = 0.7;
+    p_rt.yposOhdr  = 0.8;
+    p_rt.hOhdr     = 0.2;
+    
+    
+    % ---------------------------------------------------------------------
+    % Edit : XO
+    
+    p_rt.countO = p_rt.countO + 1;
+    e_xo.x = p_rt.xposO(p_rt.countO);
+    e_xo.y = p_rt.yposOmain ;
+    e_xo.w = p_rt.Ow;
+    e_xo.h = p_rt.hOmain;
+    handles.edit_XO = uicontrol(handles.uipanel_RT,...
+        'Style','edit',...
+        'Units', 'Normalized',...
+        'Position',[e_xo.x e_xo.y e_xo.w e_xo.h],...
+        'BackgroundColor',editBGcolor,...
+        'String','0.850');
+    
+    
+    % ---------------------------------------------------------------------
+    % Text : XO
+    
+    t_xo.x = p_rt.xposO(p_rt.countO);
+    t_xo.y = p_rt.yposOhdr ;
+    t_xo.w = p_rt.Ow;
+    t_xo.h = p_rt.hOhdr;
+    handles.text_XO = uicontrol(handles.uipanel_RT,...
+        'Style','text',...
+        'Units', 'Normalized',...
+        'Position',[t_xo.x t_xo.y t_xo.w t_xo.h],...
+        'String','XO',...
+        'BackgroundColor',figureBGcolor);
+    
+    
+    % ---------------------------------------------------------------------
+    % Edit : Positive
+    
+    p_rt.countO = p_rt.countO + 1;
+    e_pos.x = p_rt.xposO(p_rt.countO);
+    e_pos.y = p_rt.yposOmain ;
+    e_pos.w = p_rt.Ow;
+    e_pos.h = p_rt.hOmain;
+    handles.edit_Positive = uicontrol(handles.uipanel_RT,...
+        'Style','edit',...
+        'Units', 'Normalized',...
+        'Position',[e_pos.x e_pos.y e_pos.w e_pos.h],...
+        'BackgroundColor',editBGcolor,...
+        'String','0.850');
+    
+    
+    % ---------------------------------------------------------------------
+    % Text : Positive
+    
+    t_pos.x = p_rt.xposO(p_rt.countO);
+    t_pos.y = p_rt.yposOhdr ;
+    t_pos.w = p_rt.Ow;
+    t_pos.h = p_rt.hOhdr;
+    handles.text_Positive = uicontrol(handles.uipanel_RT,...
+        'Style','text',...
+        'Units', 'Normalized',...
+        'Position',[t_pos.x t_pos.y t_pos.w t_pos.h],...
+        'String','+++',...
+        'BackgroundColor',figureBGcolor);
+    
+    
+    % ---------------------------------------------------------------------
+    % Edit : Negative
+    
+    p_rt.countO = p_rt.countO + 1;
+    e_neg.x = p_rt.xposO(p_rt.countO);
+    e_neg.y = p_rt.yposOmain ;
+    e_neg.w = p_rt.Ow;
+    e_neg.h = p_rt.hOmain;
+    handles.edit_Negative = uicontrol(handles.uipanel_RT,...
+        'Style','edit',...
+        'Units', 'Normalized',...
+        'Position',[e_neg.x e_neg.y e_neg.w e_neg.h],...
+        'BackgroundColor',editBGcolor,...
+        'String','0.850');
+    
+    
+    % ---------------------------------------------------------------------
+    % Text : Negative
+    
+    t_neg.x = p_rt.xposO(p_rt.countO);
+    t_neg.y = p_rt.yposOhdr ;
+    t_neg.w = p_rt.Ow;
+    t_neg.h = p_rt.hOhdr;
+    handles.text_Negative = uicontrol(handles.uipanel_RT,...
+        'Style','text',...
+        'Units', 'Normalized',...
+        'Position',[t_neg.x t_neg.y t_neg.w t_neg.h],...
+        'String','---',...
+        'BackgroundColor',figureBGcolor);
     
     
     %% Panel : Save mode
@@ -615,6 +734,7 @@ if isempty(figPtr) % Create the figure
         'Position',[e_sess.x e_sess.y e_sess.w e_sess.h],...
         'String','1',...
         'Tag',e_sess.tag,...
+        'BackgroundColor',editBGcolor,...
         'Callback',@edit_SessionNumber_Callback);
     
     
@@ -666,12 +786,12 @@ if isempty(figPtr) % Create the figure
     b_calFpos.y = p_tk.V.xposO(p_tk.V.countO);
     b_calFpos.w = p_tk.H.Ow;
     b_calFpos.h = p_tk.V.Ow;
-    b_calFpos.tag = 'pushbutton_CalibrationFraces';
+    b_calFpos.tag = 'pushbutton_CalibrationFaces';
     handles.(b_calFpos.tag) = uicontrol(handles.uipanel_Task,...
         'Style','pushbutton',...
         'Units', 'Normalized',...
         'Position',[b_calFpos.x b_calFpos.y b_calFpos.w b_calFpos.h],...
-        'String','Calibration Fraces',...
+        'String','Calibration Faces',...
         'BackgroundColor',buttonBGcolor,...
         'Tag',b_calFpos.tag,...
         'Callback',@SMACC_main);
@@ -886,7 +1006,7 @@ if isempty(figPtr) % Create the figure
     fprintf('HHSC - 1x2 - CYL \n')
     fprintf('HID NAR BYGRT \n')
     fprintf('\n')
-    fprintf('==> Bouton BLEU dans la main DROITE <==\n')
+    fprintf('==> BLUE button in the RIGHT hand <==\n')
     fprintf('\n')
     
 else % Figure exists so brings it to the focus
