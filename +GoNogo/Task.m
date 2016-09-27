@@ -41,6 +41,43 @@ try
     Common.StartRecordingEyelink;
     
     
+    %% RT inputs
+    
+    switch DataStruct.Task
+        case 'MRI'
+            RTinputs    = 1;
+            RT_XO       = DataStruct.RT.XO;
+            RT_Positive = DataStruct.RT.Positive;
+            RT_Negative = DataStruct.RT.Negative;
+            
+        case 'EEG'
+            RTinputs    = 1;
+            RT_XO       = DataStruct.RT.XO;
+            RT_Positive = DataStruct.RT.Positive;
+            RT_Negative = DataStruct.RT.Negative;
+            
+        case 'Training'
+            
+            sumRT = sum(isnan(struct2array(DataStruct.RT)));
+            
+            if sumRT == 0
+                RTinputs    = 1;
+                RT_XO       = DataStruct.RT.XO;
+                RT_Positive = DataStruct.RT.Positive;
+                RT_Negative = DataStruct.RT.Negative;
+                
+            elseif sumRT == 0
+                RTinputs = 0;
+                
+            else
+                error('SMACC:RTemptyTraining','For training, no RT or all RT')
+            end
+            
+        otherwise
+            RTinputs = 0;
+    end
+    
+    
     %% Go
     
     event_onset = 0;
@@ -81,10 +118,26 @@ try
                         pp = msg.Instructions;
                         block_counter = block_counter +1 ;
                         
-                        if size(Paradigm,2) == 5
-                            maxRT = Paradigm{block_counter,5};
-                        else
-                            maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
+                        switch RTinputs
+                            
+                            case 0
+                                
+                                if size(Paradigm,2) == 5
+                                    maxRT = Paradigm{block_counter,5};
+                                else
+                                    maxRT = Timings.Stimulus  + Timings.WhiteScreen_1 + Timings.Cross(1);
+                                end
+                                
+                            case 1
+                                
+                                if strcmp(Paradigm{block_counter,2}, 'positive' )
+                                    maxRT = RT_Positive;
+                                elseif strcmp(Paradigm{block_counter,2}, 'negative' )
+                                    maxRT = RT_Negative;
+                                elseif strcmp(Paradigm{block_counter,2}, 'cross' ) || strcmp(Paradigm{block_counter,2}, 'circle' )
+                                    maxRT = RT_XO;
+                                end
+                                
                         end
                         
                         Common.CommandWindowDisplay;
@@ -259,7 +312,8 @@ try
                 has_clicked...
                 good_click...
                 too_late_click...
-                wrong_click}; %#ok<AGROW>
+                wrong_click...
+                maxRT}; %#ok<AGROW>
             
             disp(Table(stimulus_counter,:))
             

@@ -1,17 +1,24 @@
-function [ Stats, newTable, newTable_hdr ] = table2stats( Table, display )
+function [ Stats, newTable, newTable_hdr ] = table2stats( DataStruct, display )
 
 if nargin<2
     display = 1;
 end
+
+Table = DataStruct.TaskData.Table; % shortcut
 
 Stats = struct;
 
 
 %% Build condition name
 
+% Retro-compatibility
+if size(Table,2) ~= 10
+    Table(:,10)= num2cell(ones(size(Table,1),1)*0.850);
+end
+
 allBlocks = cell( size(Table,1) , 1 );
 for ab = 1:size(Table,1)
-    allBlocks{ab} = [Table{ab,3} '_' Table{ab,4}];
+    allBlocks{ab} = [Table{ab,3} '_' Table{ab,4} '_' sprintf('%d',round(cell2mat(Table(ab,10))*1000))];
 end % for
 
 
@@ -56,12 +63,13 @@ end % for
 
 fields = {'OkGo', 'ErrorNG', 'TooLate', 'Miss'};
 
-newTable_hdr = {'block', 'OkGo:count', 'OkGo:mean', 'ErrorNG:count', 'ErrorNG:mean', 'TooLate:count', 'TooLate:mean', 'Miss:count'};
+newTable_hdr = {'block', 'OkGo:count', 'OkGo:mean', 'ErrorNG:count', 'ErrorNG:mean', 'TooLate:count', 'TooLate:mean', 'Miss:count', 'maxRT'};
 newTable = cell(0);
 
 for c = 1:length(blockNames)
     
-    newTable{c,1} = blockNames{c};
+    newTable{c,1} = blockNames{c}(1:end-4);
+    
     
     for f = 1:length(fields)
         
@@ -74,6 +82,8 @@ for c = 1:length(blockNames)
         
     end % for
     
+    newTable{c,9} =str2double(blockNames{c}(end-2:end))/1000;
+
 end % for
 
 

@@ -186,6 +186,27 @@ switch OperationMode
 end
 
 
+%% Fetch the RT
+
+RTlist = {'XO' 'Positive' 'Negative'};
+
+for l = 1:length(RTlist)
+    DataStruct.RT.(RTlist{l}) = str2double( get(handles.(['edit_' RTlist{l}]),'String') );
+    if strcmp(Task,'MRI') || strcmp(Task,'EEG')
+        if isempty(DataStruct.RT.(RTlist{l}))
+            error('SMACC:RTempty','%s RT is required',RTlist{l})
+        end
+    end
+end
+
+if strcmp(Task,'Training')
+    sumRT = sum(isnan(struct2array(DataStruct.RT)));
+    if ~( sumRT == 0 || sumRT == 3 )
+        error('SMACC:RTemptyTraining','For training, no RT or all RT')
+    end
+end
+
+
 %% Parallel port ?
 
 switch get( handles.checkbox_ParPort , 'Value' )
@@ -333,7 +354,7 @@ end
 
 %% Reaction time & stats
 
-[ DataStruct.Stats, DataStruct.newTable, DataStruct.newTable_hdr ] = table2stats(DataStruct.TaskData.Table);
+[ DataStruct.Stats, DataStruct.newTable, DataStruct.newTable_hdr ] = table2stats(DataStruct);
 
 
 %% Saving data strucure

@@ -153,7 +153,7 @@ if isempty(figPtr) % Create the figure
         'Position',[b_rt.x b_rt.y b_rt.w b_rt.h],...
         'String','Subject RT',...
         'BackgroundColor',buttonBGcolor,...
-        'Callback','');
+        'Callback',@(hObject,eventdata)SubjectRT(handles.edit_SubjectID,eventdata));
     
     
     % ---------------------------------------------------------------------
@@ -228,7 +228,9 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_xo.x e_xo.y e_xo.w e_xo.h],...
         'BackgroundColor',editBGcolor,...
-        'String','');
+        'String','',...
+        'Tag','RT XO',...
+        'Callback',@edit_RT_Callback);
     
     
     % ---------------------------------------------------------------------
@@ -259,7 +261,9 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_pos.x e_pos.y e_pos.w e_pos.h],...
         'BackgroundColor',editBGcolor,...
-        'String','');
+        'String','',...
+        'Tag','RT +++',...
+        'Callback',@edit_RT_Callback);
     
     
     % ---------------------------------------------------------------------
@@ -290,7 +294,9 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_neg.x e_neg.y e_neg.w e_neg.h],...
         'BackgroundColor',editBGcolor,...
-        'String','');
+        'String','',...
+        'Tag','RT ---',...
+        'Callback',@edit_RT_Callback);
     
     
     % ---------------------------------------------------------------------
@@ -1049,20 +1055,20 @@ end % function
 
 %% GUI Functions
 
-% -------------------------------------------------------------------------
-function uipanel_RecordVideo_SelectionChangeFcn(hObject, eventdata)
-handles = guidata(hObject);
-
-switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
-    case 'radiobutton_RecordOn'
-        set(handles.text_RecordName,'Visible','On')
-        set(handles.edit_RecordName,'Visible','On')
-    case 'radiobutton_RecordOff'
-        set(handles.text_RecordName,'Visible','off')
-        set(handles.edit_RecordName,'Visible','off')
-end
-
-end % function
+% % -------------------------------------------------------------------------
+% function uipanel_RecordVideo_SelectionChangeFcn(hObject, eventdata)
+% handles = guidata(hObject);
+%
+% switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
+%     case 'radiobutton_RecordOn'
+%         set(handles.text_RecordName,'Visible','On')
+%         set(handles.edit_RecordName,'Visible','On')
+%     case 'radiobutton_RecordOff'
+%         set(handles.text_RecordName,'Visible','off')
+%         set(handles.edit_RecordName,'Visible','off')
+% end
+%
+% end % function
 
 
 % -------------------------------------------------------------------------
@@ -1073,6 +1079,19 @@ block = str2double(get(hObject,'String'));
 if block ~= round(block) || block < 1
     set(hObject,'String','1');
     error('Session number must be positive integer')
+end
+
+end % function
+
+
+% -------------------------------------------------------------------------
+function edit_RT_Callback(hObject, ~)
+
+RT = str2double(get(hObject,'String'));
+
+if ~(RT <= 1 && RT > 0)
+    set(hObject,'String','');
+    error('%s must be between 0 and 1',get(hObject,'Tag'))
 end
 
 end % function

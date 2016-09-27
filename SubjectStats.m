@@ -1,4 +1,4 @@
-function [] = SubjectStats(hObject,eventdata)
+function SubjectStats(hObject,eventdata)
 
 % ../
 upperDir = fullfile( fileparts( pwd ) );
@@ -36,15 +36,19 @@ fprintf('\n\n SubjectID data dir : %s \n', SubjectIDDir)
 
 %% Display in order of occurrence
 
-fullTable = cell(0,8);
+fullTable = cell(0,9);
 for f = 1 : size(dirContentSorted,2)
-    if regexp(dirContentSorted{1,f},[ SubjectID '_.*\d+.mat$'])
+    if regexp(dirContentSorted{1,f},[ SubjectID '_.*MRI_\d+.mat$'])
         fprintf('  %s \n', dirContentSorted{1,f})
         S = load([ SubjectIDDir filesep dirContentSorted{1,f} ]);
-        [ ~ , newTable, newTable_hdr ] = table2stats(S.DataStruct.TaskData.Table,0);
+        [ ~ , newTable, newTable_hdr ] = table2stats(S.DataStruct,0);
         fullTable = [fullTable ; newTable]; %#ok<*AGROW>
     end % if
 end % for
+
+if isempty(fullTable)
+    error('no MRI file found in : %s', dataDir)
+end % if
 
 disp([ newTable_hdr ; fullTable])
 
@@ -60,8 +64,8 @@ listConditions = {
     'circle_null'
     'cross_null'
     };
-allMeans = nan(size(listConditions,1),7);
-sortedTable = cell(0,8);
+allMeans = nan(size(listConditions,1),8);
+sortedTable = cell(0,9);
 
 for s = 1 : length(listConditions)
     idx = strcmp(fullTable(:,1),listConditions{s});
@@ -75,7 +79,6 @@ end % for
 
 fprintf('\n')
 disp([ newTable_hdr ; sortedTable])
-
 
 %% Plot
 
