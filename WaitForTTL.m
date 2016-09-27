@@ -28,7 +28,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
         
         if keyIsDown
             
-            switch DataStruct.Environement
+            switch DataStruct.Task
                 
                 case 'MRI'
                     
@@ -49,6 +49,60 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     end
                     
                 case 'Training'
+                    
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                        break
+                        
+                    elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
+                        
+                        % Eyelink mode 'On' ?
+                        if strcmp(DataStruct.EyelinkMode,'On')
+                            Eyelink.STOP % Stop wrapper
+                        end
+                        
+                        sca
+                        stack = dbstack;
+                        error('WitingForTTL:Abort','\n ESCAPE key : %s aborted \n',stack.file)
+                        
+                    end
+                    
+                case 'CalibrationXO'
+                    
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                        break
+                        
+                    elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
+                        
+                        % Eyelink mode 'On' ?
+                        if strcmp(DataStruct.EyelinkMode,'On')
+                            Eyelink.STOP % Stop wrapper
+                        end
+                        
+                        sca
+                        stack = dbstack;
+                        error('WitingForTTL:Abort','\n ESCAPE key : %s aborted \n',stack.file)
+                        
+                    end
+                    
+                case 'CalibrationFaces'
+                    
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                        break
+                        
+                    elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
+                        
+                        % Eyelink mode 'On' ?
+                        if strcmp(DataStruct.EyelinkMode,'On')
+                            Eyelink.STOP % Stop wrapper
+                        end
+                        
+                        sca
+                        stack = dbstack;
+                        error('WitingForTTL:Abort','\n ESCAPE key : %s aborted \n',stack.file)
+                        
+                    end
+                    
+                case 'EEG'
                     
                     if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
                         break

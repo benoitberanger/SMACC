@@ -38,7 +38,7 @@ if isempty(figPtr) % Create the figure
     panelProp.wP    = 1 - panelProp.xposP * 2;
     
     panelProp.vect  = ...
-        [1 3 2 1 1.5 2]; % relative proportions of each panel, from bottom to top
+        [1 2 1.5 1 1.5 2]; % relative proportions of each panel, from bottom to top
     
     panelProp.vectLength    = length(panelProp.vect);
     panelProp.vectTotal     = sum(panelProp.vect);
@@ -123,6 +123,7 @@ if isempty(figPtr) % Create the figure
         'TooltipString','Display in Command Window the content of data/(SubjectID)',...
         'Callback',@(hObject,eventdata)GUI.Pushbutton_Check_SubjectID_data_Callback(handles.edit_SubjectID,eventdata));
     
+    
     % ---------------------------------------------------------------------
     % Pushbutton : Stats
     
@@ -137,6 +138,23 @@ if isempty(figPtr) % Create the figure
         'String','Subject stats',...
         'BackgroundColor',buttonBGcolor,...
         'Callback',@(hObject,eventdata)SubjectStats(handles.edit_SubjectID,eventdata));
+    
+    
+    % ---------------------------------------------------------------------
+    % Pushbutton : RT
+    
+    b_rt.x = p_sr.xposO(p_sr.countO);
+    b_rt.y = p_sr.yposOhdr;
+    b_rt.w = p_sr.Ow;
+    b_rt.h = p_sr.hOmain/2;
+    handles.pushbutton_RT = uicontrol(handles.uipanel_SubjectRun,...
+        'Style','pushbutton',...
+        'Units', 'Normalized',...
+        'Position',[b_rt.x b_rt.y b_rt.w b_rt.h],...
+        'String','Subject RT',...
+        'BackgroundColor',buttonBGcolor,...
+        'Callback','');
+    
     
     % ---------------------------------------------------------------------
     % Text : Last file name annoucer
@@ -210,7 +228,7 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_xo.x e_xo.y e_xo.w e_xo.h],...
         'BackgroundColor',editBGcolor,...
-        'String','0.850');
+        'String','');
     
     
     % ---------------------------------------------------------------------
@@ -241,7 +259,7 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_pos.x e_pos.y e_pos.w e_pos.h],...
         'BackgroundColor',editBGcolor,...
-        'String','0.850');
+        'String','');
     
     
     % ---------------------------------------------------------------------
@@ -272,7 +290,7 @@ if isempty(figPtr) % Create the figure
         'Units', 'Normalized',...
         'Position',[e_neg.x e_neg.y e_neg.w e_neg.h],...
         'BackgroundColor',editBGcolor,...
-        'String','0.850');
+        'String','');
     
     
     % ---------------------------------------------------------------------
@@ -457,7 +475,7 @@ if isempty(figPtr) % Create the figure
     c_ws.x = panelProp.xposP;
     c_ws.w = el_shift - panelProp.xposP;
     
-    c_ws.y = panelProp.yposP(panelProp.countP) ;
+    c_ws.y = panelProp.yposP(panelProp.countP)-0.01 ;
     c_ws.h = p_el.h * 0.3;
     
     handles.checkbox_WindowedScreen = uicontrol(handles.(mfilename),...
@@ -476,7 +494,7 @@ if isempty(figPtr) % Create the figure
     l_sc.w = el_shift - panelProp.xposP;
     
     l_sc.y = c_ws.y + c_ws.h ;
-    l_sc.h = p_el.h * 0.5;
+    l_sc.h = p_el.h * 0.6;
     
     handles.listbox_Screens = uicontrol(handles.(mfilename),...
         'Style','listbox',...
@@ -552,7 +570,8 @@ if isempty(figPtr) % Create the figure
         'String','Off',...
         'HorizontalAlignment','Center',...
         'Tag',r_eloff.tag,...
-        'BackgroundColor',figureBGcolor);
+        'BackgroundColor',figureBGcolor,...
+        'Visible','Off');
     
     
     % ---------------------------------------------------------------------

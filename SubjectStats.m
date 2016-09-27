@@ -13,6 +13,10 @@ end
 
 SubjectID = get(hObject,'String');
 
+if isempty(SubjectID)
+    error( 'MATLAB:EmptySubjectID' ,  ' \n ---> Empty SubjectID <--- \n ' )
+end
+
 % ../data/(SubjectID)
 SubjectIDDir = fullfile( dataDir , SubjectID );
 
