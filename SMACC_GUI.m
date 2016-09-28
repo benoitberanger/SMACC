@@ -12,6 +12,8 @@ figPtr = findall(0,'Tag',mfilename);
 if isempty(figPtr) % Create the figure
     
     clc
+    rng('default')
+    rng('shuffle')
     
     % Create a figure
     figHandle = figure( ...
