@@ -41,7 +41,7 @@ for f = 1 : size(dirContentSorted,2)
     if regexp(dirContentSorted{1,f},[ SubjectID '_.*MRI_\d+.mat$'])
         fprintf('  %s \n', dirContentSorted{1,f})
         S = load([ SubjectIDDir filesep dirContentSorted{1,f} ]);
-        [ ~ , newTable, newTable_hdr ] = table2stats(S.DataStruct,0);
+        [ ~ , newTable, newTable_hdr ] = Stats.table2stats(S.DataStruct,0);
         fullTable = [fullTable ; newTable]; %#ok<*AGROW>
     end % if
 end % for
@@ -79,6 +79,7 @@ end % for
 
 fprintf('\n')
 disp([ newTable_hdr ; sortedTable])
+
 
 %% Plot
 

@@ -66,7 +66,7 @@ try
                 RT_Positive = DataStruct.RT.Positive;
                 RT_Negative = DataStruct.RT.Negative;
                 
-            elseif sumRT == 0
+            elseif sumRT == 3
                 RTinputs = 0;
                 
             else

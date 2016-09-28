@@ -1,13 +1,13 @@
 function [ PTB ] = StartPTB( DataStruct )
 
-% %% Audio 
-% 
+% %% Audio
+%
 % % Perform basic initialization of the sound driver:
 % InitializePsychSound(1);
-% 
+%
 % % Close the audio device:
 % PsychPortAudio('Close')
-% 
+%
 % % Playback device initialization
 % PTB.Playback_pahandle = PsychPortAudio('Open', [],...
 %     DataStruct.Parameters.Audio.Playback_Mode,...

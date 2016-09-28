@@ -2,20 +2,54 @@ function [ TriggerTime ] = WaitForTTL( DataStruct )
 
 if strcmp(DataStruct.OperationMode,'Acquisition')
     
-    if ~isfield(DataStruct,'StartTime') % It means wait for 1st TTL @ Begining of stimulation
+    switch DataStruct.Task
         
-        disp('----------------------------------')
-        disp('      Waiting for trigger "t"     ')
-        disp('                OR                ')
-        disp('   Press "s" to emulate trigger   ')
-        disp('      Press "Escape" to abort     ')
-        disp('----------------------------------')
-        disp(' ')
-        
-    else % All other cases
-        
-        disp('Waiting for TTL')
-        
+        case 'MRI'
+            disp('----------------------------------')
+            disp('      Waiting for trigger "t"     ')
+            disp('                OR                ')
+            disp('   Press "s" to emulate trigger   ')
+            disp('                OR                ')
+            disp('      Press "Escape" to abort     ')
+            disp('----------------------------------')
+            disp(' ')
+            
+        case 'Training'
+            disp('----------------------------------')
+            disp('          Press "b" start         ')
+            disp('                OR                ')
+            disp('      Waiting for trigger "t"     ')
+            disp('                OR                ')
+            disp('   Press "s" to emulate trigger   ')
+            disp('                OR                ')
+            disp('      Press "Escape" to abort     ')
+            disp('----------------------------------')
+            disp(' ')
+            
+        case 'EEG'
+            disp('----------------------------------')
+            disp('          Press "b" start         ')
+            disp('                OR                ')
+            disp('      Press "Escape" to abort     ')
+            disp('----------------------------------')
+            disp(' ')
+            
+        case 'CalibrationXO'
+            disp('----------------------------------')
+            disp('          Press "b" start         ')
+            disp('                OR                ')
+            disp('      Press "Escape" to abort     ')
+            disp('----------------------------------')
+            disp(' ')
+            
+        case 'CalibrationFaces'
+            disp('----------------------------------')
+            disp('          Press "b" start         ')
+            disp('                OR                ')
+            disp('      Press "Escape" to abort     ')
+            disp('----------------------------------')
+            disp(' ')
+            
     end
     
     % Just to be sure the user is not pushing a button before
@@ -68,7 +102,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     
                 case 'CalibrationXO'
                     
-                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
                         break
                         
                     elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
@@ -86,7 +120,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     
                 case 'CalibrationFaces'
                     
-                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
                         break
                         
                     elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)
@@ -104,7 +138,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     
                 case 'EEG'
                     
-                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) || keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
                         break
                         
                     elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)

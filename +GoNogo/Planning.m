@@ -132,6 +132,7 @@ end % switch
 
 
 %% Fill the Paradigm with shuffled lists
+
 Paradigm = {}; % initilize
 for l = 1 : nList
     
@@ -154,7 +155,7 @@ for l = 1 : nList
     end
     
     if ~isempty(Paradigm) % Don't add the 30s cross for the first
-        switch DataStruct.Environement
+        switch DataStruct.Task
             case 'EEG'
                 Paradigm = [Paradigm ; {[] [] [] []}];%#ok<*AGROW>
         end % switch

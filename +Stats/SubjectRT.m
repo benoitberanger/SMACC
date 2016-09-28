@@ -49,7 +49,7 @@ end
 
 % Extraction of the Table
 XOstruct = load([dataDir filesep SubjectID filesep fileNames{Faces_files_idx}]);
-[ ~ , xoTable, ~ ] = table2stats(XOstruct.DataStruct,1);
+[ ~ , xoTable, ~ ] = Stats.table2stats(XOstruct.DataStruct,1);
 
 % figure : open
 figure( ...
@@ -101,7 +101,7 @@ end
 
 % Extraction of the Table
 Fstruct = load([dataDir filesep SubjectID filesep fileNames{Faces_files_idx}]);
-[ ~ , FacesTable, ~ ] = table2stats(Fstruct.DataStruct,1);
+[ ~ , FacesTable, ~ ] = Stats.table2stats(Fstruct.DataStruct,1);
 
 % figure : open
 figure( ...
@@ -153,7 +153,7 @@ end
 
 % Extraction of the Table
 Fstruct = load([dataDir filesep SubjectID filesep fileNames{Faces_files_idx}]);
-[ ~ , FacesTable, ~ ] = table2stats(Fstruct.DataStruct,1);
+[ ~ , FacesTable, ~ ] = Stats.table2stats(Fstruct.DataStruct,1);
 
 % figure : open
 figure( ...

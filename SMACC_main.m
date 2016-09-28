@@ -75,7 +75,7 @@ DataStruct.Task = Task;
 %     otherwise
 %         warning('SMACC:ModeSelection','Error in Environement selection')
 % end
-% 
+%
 % DataStruct.Environement = Environement;
 
 
@@ -354,7 +354,7 @@ end
 
 %% Reaction time & stats
 
-[ DataStruct.Stats, DataStruct.newTable, DataStruct.newTable_hdr ] = table2stats(DataStruct);
+[ DataStruct.Stats, DataStruct.newTable, DataStruct.newTable_hdr ] = Stats.table2stats(DataStruct);
 
 
 %% Saving data strucure
