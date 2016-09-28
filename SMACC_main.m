@@ -193,7 +193,7 @@ RTlist = {'XO' 'Positive' 'Negative'};
 for l = 1:length(RTlist)
     DataStruct.RT.(RTlist{l}) = str2double( get(handles.(['edit_' RTlist{l}]),'String') );
     if strcmp(Task,'MRI') || strcmp(Task,'EEG')
-        if isempty(DataStruct.RT.(RTlist{l}))
+        if isnan(DataStruct.RT.(RTlist{l}))
             error('SMACC:RTempty','%s RT is required',RTlist{l})
         end
     end

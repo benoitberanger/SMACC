@@ -136,6 +136,8 @@ try
                                     maxRT = RT_Negative;
                                 elseif strcmp(Paradigm{block_counter,2}, 'cross' ) || strcmp(Paradigm{block_counter,2}, 'circle' )
                                     maxRT = RT_XO;
+                                elseif strcmp(Paradigm{block_counter,2}, 'null' )
+                                    maxRT = Inf; % no red cross
                                 end
                                 
                         end
@@ -315,7 +317,7 @@ try
                 wrong_click...
                 maxRT}; %#ok<AGROW>
             
-            disp(Table(stimulus_counter,:))
+            fprintf('%1.3f %d %s %s %1.3f %d %d %d %d %1.3f \n',Table{stimulus_counter,:})
             
         end % if
         
