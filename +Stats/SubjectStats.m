@@ -38,7 +38,7 @@ fprintf('\n\n SubjectID data dir : %s \n', SubjectIDDir)
 
 fullTable = cell(0,9);
 for f = 1 : size(dirContentSorted,2)
-    if regexp(dirContentSorted{1,f},[ SubjectID '_.*MRI_\d+.mat$'])
+    if ( ~isempty(regexp(dirContentSorted{1,f},[ SubjectID '_MRI.*_\d+.mat$'])) || ~isempty(regexp(dirContentSorted{1,f},[ SubjectID '_.*MRI_\d+.mat$'])) ) %#ok<RGXP1>
         fprintf('  %s \n', dirContentSorted{1,f})
         S = load([ SubjectIDDir filesep dirContentSorted{1,f} ]);
         [ ~ , newTable, newTable_hdr ] = Stats.table2stats(S.DataStruct,0);
@@ -71,7 +71,9 @@ for s = 1 : length(listConditions)
     idx = strcmp(fullTable(:,1),listConditions{s});
     sortedTable = [sortedTable ; fullTable(idx,:)];
     if any(idx)
-        localmean = nanmean(cell2mat(fullTable(idx,2:end)),1);
+        localmean = cell2mat(fullTable(idx,2:end));
+        localmean(isnan(localmean)) = 0;
+        localmean = mean(localmean,1);
         sortedTable = [sortedTable ; ['mean' num2cell(localmean) ]];
         allMeans(s,:) = localmean;
     end % if
