@@ -196,7 +196,7 @@ Timings.WhiteScreen_2 = 0.200;
 
 Timings.Instructions  = 5.500;
 Timings.FixationCross = 5.000;
-
+Timings.WhiteScreen_0 = 0.500;
 
 firstGO = 3; % number of forced Go at the beguining
 
@@ -261,9 +261,9 @@ for p = 1 : size(Paradigm,1)
         goContext = Paradigm{p,1};
         nogoContext = Paradigm{p,2};
         
-        EP.AddPlanning({ 'Instructions'  NextOnset(EP) Timings.Instructions    Instructions.(goContext).(nogoContext) goContext nogoContext -1 Instructions.(goContext).(nogoContext) });
-        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timings.FixationCross   []                                     goContext nogoContext -1 '+'                                    });
-        
+        EP.AddPlanning({ 'Instructions'  NextOnset(EP) Timings.Instructions    Instructions.(goContext).(nogoContext) goContext nogoContext -1              Instructions.(goContext).(nogoContext) });
+        EP.AddPlanning({ 'FixationCross' NextOnset(EP) Timings.FixationCross   []                                     goContext nogoContext -1              '+'                                    });
+        EP.AddPlanning({ 'WhiteScreen_0' NextOnset(EP) Timings.WhiteScreen_0   []                                     goContext nogoContext -1              'ws'                                   });
         
         % Generate the Go/NoGo sequence
         Sequence = PsedoRand2Conditions( nGo-firstGO , nNoGo , 1 );

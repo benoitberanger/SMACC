@@ -52,11 +52,13 @@ try
     
     EventData = DataStruct.TaskData.ER.Data;
     
-    Instructions_idx = strcmp(EventData(:,1),'Instructions');
+    Instructions_idx  = strcmp(EventData(:,1),'Instructions' );
     FixationCross_idx = strcmp(EventData(:,1),'FixationCross');
+    WhiteScreen_0_idx = strcmp(EventData(:,1),'WhiteScreen_0');
     
-    InstrFixCross_idx = Instructions_idx + FixationCross_idx;
-    D = diff(InstrFixCross_idx);
+    %     InstrFixCrossWS0_idx = Instructions_idx + FixationCross_idx;
+    InstrFixCrossWS0_idx = Instructions_idx + FixationCross_idx + WhiteScreen_0_idx;
+    D = diff(InstrFixCrossWS0_idx);
     
     blockstart_idx = find( D == -1 ) + 1;
     
@@ -69,7 +71,7 @@ try
         
         if b ~= length(blockstart_idx)
             
-            block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):blockstart_idx(b+1)-3,3) ) );
+            block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):blockstart_idx(b+1)-4,3) ) );
             
         else
             switch  EventData{end-1,1}
@@ -79,6 +81,9 @@ try
                 case 'FixationCross'
                     block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-3,3) ) );
                     
+                case 'WhiteScreen_0'
+                    block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end-4,3) ) );
+                    
                 otherwise
                     block(b,2) = sum( cell2mat( EventData(blockstart_idx(b):end,3) ) );
                     
@@ -87,7 +92,7 @@ try
         end % if
         
     end % for
-
+    
     N = length(names);
     
     % Build a condition name:
