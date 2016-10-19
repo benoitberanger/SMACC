@@ -28,7 +28,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
             
         case 'EEG'
             disp('----------------------------------')
-            disp('          Press "b" start         ')
+            disp('          Press "t" start         ')
             disp('                OR                ')
             disp('      Press "Escape" to abort     ')
             disp('----------------------------------')
@@ -138,7 +138,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     
                 case 'EEG'
                     
-                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII)
+                    if keyCode(DataStruct.Parameters.Keymap.StartTask) ||  keyCode(DataStruct.Parameters.Keymap.SubjectButton) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
                         break
                         
                     elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)

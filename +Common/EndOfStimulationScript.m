@@ -12,16 +12,20 @@ TaskData.ER = ER;
 % KbLogger
 KL.GetQueue;
 KL.Stop;
-switch DataStruct.OperationMode
-    case 'Acquisition'
-    case 'FastDebug'
-        TR = 2.400; % seconds
-        nbVolumes = ceil( EP.Data{end,2} / TR ) ; % nb of volumes for the estimated time of stimulation
-        KL.GenerateMRITrigger( TR , nbVolumes , StartTime );
-    case 'RealisticDebug'
-        TR = 2.400; % seconds
-        nbVolumes = ceil( EP.Data{end,2} / TR ); % nb of volumes for the estimated time of stimulation
-        KL.GenerateMRITrigger( TR , nbVolumes , StartTime );
+switch DataStruct.Task
+    case 'MRI'
+        switch DataStruct.OperationMode
+            case 'Acquisition'
+            case 'FastDebug'
+                TR = 2.400; % seconds
+                nbVolumes = ceil( EP.Data{end,2} / TR ) ; % nb of volumes for the estimated time of stimulation
+                KL.GenerateMRITrigger( TR , nbVolumes , StartTime );
+            case 'RealisticDebug'
+                TR = 2.400; % seconds
+                nbVolumes = ceil( EP.Data{end,2} / TR ); % nb of volumes for the estimated time of stimulation
+                KL.GenerateMRITrigger( TR , nbVolumes , StartTime );
+            otherwise
+        end
     otherwise
 end
 KL.ScaleTime;
@@ -33,7 +37,7 @@ TaskData.KL = KL;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Here I use the KbLogger to add precise buttons inputs
 
-click_spot.R = regexp(KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII));
+click_spot.R = regexp(KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keymap.SubjectButton));
 click_spot.R = ~cellfun(@isempty,click_spot.R);
 click_spot.R = find(click_spot.R);
 

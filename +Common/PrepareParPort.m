@@ -14,7 +14,7 @@ end
 
 % Prepare messages
 
-% bit weight 0 to 3
+% pin 1 to 4
 msg.Stimulus.neutral    = 1;
 msg.Stimulus.positive   = 2;
 msg.Stimulus.negative   = 3;
@@ -30,13 +30,13 @@ msg.WrongCross.nogo     = 10;
 msg.Instructions        = 11;
 msg.FixationCross       = 12;
 
-% bit weight 5, 6 and 7
-msg.Click.ok            = 32;  % bin2dec(' 0 0 1 0 0 0 0 0 ')
-msg.Click.too_late      = 64;  % bin2dec(' 0 1 0 0 0 0 0 0 ')
-msg.Click.nogo          = 128; % bin2dec(' 1 0 0 0 0 0 0 0 ')
+% pin 5 to 7
+msg.Click.ok            = 16; % bin2dec(' 0 0 0 1 0 0 0 0 ')
+msg.Click.too_late      = 32; % bin2dec(' 0 0 1 0 0 0 0 0 ')
+msg.Click.nogo          = 64; % bin2dec(' 0 1 0 0 0 0 0 0 ')
 
 
 % Pulse duration
-msg.duration              = 0.005; % seconds
+msg.duration             = 0.005; % seconds
 
-TaskData.ParPortMessages  = msg;
+TaskData.ParPortMessages = msg;
