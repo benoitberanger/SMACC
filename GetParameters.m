@@ -96,18 +96,6 @@ Parameters.Keybinds.Right_Blue_b_ASCII   = KbName('b');
 % Parameters.Keybinds.RightArrow           = KbName('RightArrow');
 
 
-% Remap some keybinds for EEG
-
-switch DataStruct.Task
-    case 'EEG'
-        Parameters.Keymap.StartTask     = Parameters.Keybinds.TTL_t_ASCII;
-        Parameters.Keymap.SubjectButton = Parameters.Keybinds.TTL_t_ASCII;
-    otherwise
-        Parameters.Keymap.StartTask     = Parameters.Keybinds.TTL_t_ASCII;
-        Parameters.Keymap.SubjectButton = Parameters.Keybinds.Right_Blue_b_ASCII;
-end
-
-
 %% Echo in command window
 
 disp('--------------------------');

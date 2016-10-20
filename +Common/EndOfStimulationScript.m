@@ -37,7 +37,7 @@ TaskData.KL = KL;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Here I use the KbLogger to add precise buttons inputs
 
-click_spot.R = regexp(KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keymap.SubjectButton));
+click_spot.R = regexp(KL.KbEvents(:,1),KbName(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII));
 click_spot.R = ~cellfun(@isempty,click_spot.R);
 click_spot.R = find(click_spot.R);
 

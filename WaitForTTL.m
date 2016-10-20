@@ -138,7 +138,7 @@ if strcmp(DataStruct.OperationMode,'Acquisition')
                     
                 case 'EEG'
                     
-                    if keyCode(DataStruct.Parameters.Keymap.StartTask) ||  keyCode(DataStruct.Parameters.Keymap.SubjectButton) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
+                    if keyCode(DataStruct.Parameters.Keybinds.TTL_t_ASCII) || keyCode(DataStruct.Parameters.Keybinds.emulTTL_s_ASCII)
                         break
                         
                     elseif keyCode(DataStruct.Parameters.Keybinds.Stop_Escape_ASCII)

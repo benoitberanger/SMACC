@@ -252,7 +252,7 @@ try
                     
                     RT = secs - last_stimulus_onset;
                     
-                    if keyCode(DataStruct.Parameters.Keymap.SubjectButton) && ~has_clicked
+                    if keyCode(DataStruct.Parameters.Keybinds.Right_Blue_b_ASCII) && ~has_clicked
                         has_clicked = 1;
                         good_click = 1;
                         pp = msg.Click.ok;
